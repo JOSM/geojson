@@ -35,7 +35,7 @@ public class GeoJsonLayer extends Layer {
 
 	@Override
 	public Icon getIcon() {
-		return ImageProvider.get("data", "Way");
+		return ImageProvider.get("data", "way");
 	}
 
 	@Override

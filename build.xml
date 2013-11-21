@@ -54,7 +54,7 @@
             <fileset dir="data"/>
         </copy>
         <jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">
-            <zipfileset src="lib/jackson-core-2.2.1.jar" includes="**/*"/>
+            <zipfileset src="lib/jackson-core-2.2.3.jar" includes="**/*"/>
             <zipfileset src="lib/geojson-jackson-1.1.jar" includes="**/*"/>
             <zipfileset src="lib/jackson-databind-2.2.3.jar" includes="**/*"/>
             <manifest>
