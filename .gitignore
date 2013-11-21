@@ -1,0 +1,4 @@
+build
+.settings
+.DS_Store
+/build
