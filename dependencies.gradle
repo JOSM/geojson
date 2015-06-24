@@ -1,0 +1,13 @@
+project.ext.versions = [
+    geojsonjackson: '1.5',
+    jackson: '2.5.4',
+]
+
+project.ext.packages = [
+    geojsonjackson: "de.grundid.opendatalab:geojson-jackson:${versions.geojsonjackson}",
+    jackson: [
+        core: "com.fasterxml.jackson.core:jackson-core:${versions.jackson}",
+        databind: "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
+        annotations: "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}",
+    ],
+]
