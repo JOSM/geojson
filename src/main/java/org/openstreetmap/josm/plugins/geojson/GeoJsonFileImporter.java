@@ -15,33 +15,48 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class GeoJsonFileImporter extends FileImporter {
+/**
+ * @author Ian Dees <ian.dees@gmail.com>
+ * @author matthieun <https://github.com/matthieun>
+ */
+public class GeoJsonFileImporter extends FileImporter
+{
+    public GeoJsonFileImporter()
+    {
+        super(new ExtensionFileFilter("geojson,json", "geojson", tr("GeoJSON file")
+                + " (*.geojson,*.json)"));
+    }
 
-	public GeoJsonFileImporter() {
-		super(new ExtensionFileFilter("geojson,json", "geojson", tr("GeoJSON file") + " (*.geojson,*.json)"));
-	}
+    @Override
+    public void importData(final File file, final ProgressMonitor progressMonitor)
+    {
+        GeoJsonObject object = null;
 
-	@Override
-	public void importData(File file, ProgressMonitor progressMonitor) {
-		GeoJsonObject object = null;
+        System.out.println("Parsing GeoJSON: " + file.getAbsolutePath());
+        try
+        {
+            object = new ObjectMapper().readValue(file, GeoJsonObject.class);
+            System.out.println("Found: " + object.getClass());
+        }
+        catch (final JsonParseException e)
+        {
+            e.printStackTrace();
+        }
+        catch (final JsonMappingException e)
+        {
+            e.printStackTrace();
+        }
+        catch (final IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (final Exception e)
+        {
+            e.printStackTrace();
+        }
 
-		System.out.println("Parsing GeoJSON: " + file.getAbsolutePath());
-		try {
-			object = new ObjectMapper().readValue(file, GeoJsonObject.class);
-			System.out.println("Found: " + object.getClass());
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		GeoJsonLayer layer = new GeoJsonLayer("GeoJSON: " + file.getName(), object);
-		Main.main.addLayer(layer);
-		System.out.println("Added layer.");
-	}
-
+        final GeoJsonLayer layer = new GeoJsonLayer("GeoJSON: " + file.getName(), object);
+        Main.main.addLayer(layer);
+        System.out.println("Added layer.");
+    }
 }
