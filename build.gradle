@@ -1,7 +1,5 @@
 plugins
-{
-    id "de.undercouch.download" version "1.2"
-}
+{ id "de.undercouch.download" version "1.2" }
 
 apply from: 'dependencies.gradle'
 apply plugin: 'java'
@@ -10,9 +8,7 @@ group = 'org.openstreetmap.josm.plugins'
 version = '0.0.0-SNAPSHOT'
 
 repositories
-{
-	mavenCentral()
-}
+{ mavenCentral() }
 
 dependencies
 {
@@ -22,8 +18,37 @@ dependencies
     compile packages.jackson.core
     compile packages.jackson.databind
     compile packages.jackson.annotations
+
+    testCompile packages.junit
 }
 
+jar
+{
+    from{
+        configurations.compile.collect
+        {
+            it.isDirectory() ? it : zipTree(it).matching{
+                exclude
+                {
+                    it.path.contains('META-INF') && (it.path.endsWith('.SF') || it.path.endsWith('.DSA') || it.path.endsWith('.RSA'))
+                }
+            }
+        }
+    }
+    manifest
+    {
+        attributes("Author": "Ian Dees and matthieun",
+        "Plugin-Class": "org.openstreetmap.josm.plugins.geojson.GeoJsonPlugin",
+        "Plugin-Date": "2015-06-07T23:12:29.582966Z",
+        "Plugin-Description": "Allows you to view a GeoJSON file as a layer.",
+        "Plugin-Icon": "images/preferences/geojson.png",
+        "Plugin-Link": "http://wiki.openstreetmap.org/index.php/JOSM/Plugins/GeoJSON",
+        "Plugin-Mainversion": "4549",
+        "Plugin-Version": "31241",
+        "Plugin-Canloadatruntime": "true",
+        )
+    }
+}
 
 
 import de.undercouch.gradle.tasks.download.Download
