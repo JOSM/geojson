@@ -43,7 +43,7 @@ jar
         "Plugin-Description": "Allows you to view a GeoJSON file as a layer.",
         "Plugin-Icon": "images/preferences/geojson.png",
         "Plugin-Link": "http://wiki.openstreetmap.org/index.php/JOSM/Plugins/GeoJSON",
-        "Plugin-Mainversion": "4549",
+        "Plugin-Mainversion": "7777",
         "Plugin-Version": "31241",
         "Plugin-Canloadatruntime": "true",
         )
