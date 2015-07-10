@@ -24,7 +24,6 @@ import org.openstreetmap.josm.tools.ImageProvider;
  */
 public class GeoJsonLayer extends Layer
 {
-
     private final DataSet data;
     private Bounds bounds = null;
 
