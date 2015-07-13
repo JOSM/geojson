@@ -7,13 +7,17 @@ apply plugin: 'java'
 group = 'org.openstreetmap.josm.plugins'
 version = '0.0.0-SNAPSHOT'
 
+project.ext.josm_version='8599'
+project.ext.josm_location='download'
+//project.ext.josm_location='download/Archiv'
+
 repositories
 { mavenCentral() }
 
 dependencies
 {
     // Josm is not on Maven Central
-    compile files("lib/josm-snapshot-7777.jar")
+    compile files("lib/josm-snapshot-" + josm_version +".jar")
     compile packages.geojsonjackson
     compile packages.jackson.core
     compile packages.jackson.databind
@@ -54,6 +58,6 @@ jar
 import de.undercouch.gradle.tasks.download.Download
 
 task josm(type: Download) {
-    src 'http://josm.openstreetmap.de/download/Archiv/josm-snapshot-7777.jar'
+    src 'http://josm.openstreetmap.de/' + josm_location + '/josm-snapshot-' + josm_version + '.jar'
     dest 'lib/'
 }
