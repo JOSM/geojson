@@ -21,10 +21,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class GeoJsonFileImporter extends FileImporter
 {
+    private GeoJsonLayer layer = null;
+
     public GeoJsonFileImporter()
     {
         super(new ExtensionFileFilter("geojson,json", "geojson", tr("GeoJSON file")
                 + " (*.geojson,*.json)"));
+    }
+
+    public GeoJsonLayer getLayer()
+    {
+        return this.layer;
     }
 
     @Override
@@ -55,8 +62,8 @@ public class GeoJsonFileImporter extends FileImporter
             e.printStackTrace();
         }
 
-        final GeoJsonLayer layer = new GeoJsonLayer("GeoJSON: " + file.getName(), object);
-        Main.main.addLayer(layer);
+        this.layer = new GeoJsonLayer("GeoJSON: " + file.getName(), object);
+        Main.main.addLayer(this.layer);
         System.out.println("Added layer.");
     }
 }

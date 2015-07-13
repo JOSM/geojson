@@ -35,6 +35,16 @@ public class GeoJsonLayer extends Layer
         this.bounds = boundedDataSet.getBounds();
     }
 
+    public Bounds getBounds()
+    {
+        return this.bounds;
+    }
+
+    public DataSet getData()
+    {
+        return this.data;
+    }
+
     @Override
     public Icon getIcon()
     {
@@ -74,10 +84,10 @@ public class GeoJsonLayer extends Layer
     }
 
     @Override
-    public void paint(final Graphics2D g, final MapView mv, final Bounds box)
+    public void paint(final Graphics2D graphics, final MapView mapView, final Bounds box)
     {
-        final Rendering painter = MapRendererFactory.getInstance().createActiveRenderer(g, mv,
-                false);
+        final Rendering painter = MapRendererFactory.getInstance().createActiveRenderer(graphics,
+                mapView, false);
         painter.render(this.data, false, box);
     }
 
