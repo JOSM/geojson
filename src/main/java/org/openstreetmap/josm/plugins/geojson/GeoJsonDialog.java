@@ -12,29 +12,36 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.gui.layer.Layer;
 
 /**
+ * Dialog that contains a listing of all the features opened by the GeoJson plugin.
+ *
  * @author matthieun
  */
 public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
 {
     /**
+     * Wrapper for an item to be displayed in the list
+     *
      * @author matthieun
      */
-    public static class PrintableWay
+    public static class PrintablePrimitive
     {
-        private final Way way;
+        private final OsmPrimitive osmPrimitive;
         private final long index;
 
-        public PrintableWay(final long index, final Way way)
+        public PrintablePrimitive(final long index, final OsmPrimitive osmPrimitive)
         {
-            this.way = way;
+            this.osmPrimitive = osmPrimitive;
             this.index = index;
         }
 
@@ -43,9 +50,9 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
             return this.index;
         }
 
-        public Way getWay()
+        public OsmPrimitive getOsmPrimitive()
         {
-            return this.way;
+            return this.osmPrimitive;
         }
 
         @Override
@@ -55,7 +62,7 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
             result.append("Index: ");
             result.append(this.index);
             result.append(", Tags: ");
-            result.append(this.way.getKeys());
+            result.append(this.osmPrimitive.getKeys());
             return result.toString();
         }
     }
@@ -65,6 +72,12 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
     private final GeoJsonLayer layer;
     private final JPanel panel;
 
+    /**
+     * Create the dialog. Wire the map and the list together so clicks on one selects the other.
+     *
+     * @param layer
+     *            The map layer that this dialog needs to be built from
+     */
     public GeoJsonDialog(final GeoJsonLayer layer)
     {
         super("GeoJson", "activate.png", "Opens the GeoJson plugin pane", null, 150);
@@ -76,20 +89,25 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
         {
             add(this.panel, BorderLayout.CENTER);
 
-            final DefaultListModel<PrintableWay> model = new DefaultListModel<PrintableWay>();
+            final DefaultListModel<PrintablePrimitive> model = new DefaultListModel<PrintablePrimitive>();
             final Map<Integer, PrimitiveId> indexToIdentifier = new HashMap<Integer, PrimitiveId>();
+            final Map<PrimitiveId, Integer> identifierToIndex = new HashMap<PrimitiveId, Integer>();
             int index = 0;
 
+            // Build the maps and add the primitives to the list's model
             for (final OsmPrimitive osmPrimitive : layer.getData().allPrimitives())
             {
                 if (osmPrimitive instanceof Way)
                 {
-                    model.addElement(new PrintableWay(index, (Way) osmPrimitive));
+                    model.addElement(new PrintablePrimitive(index, osmPrimitive));
                     indexToIdentifier.put(index, osmPrimitive.getPrimitiveId());
+                    identifierToIndex.put(osmPrimitive.getPrimitiveId(), index);
                     index++;
                 }
             }
-            final JList<PrintableWay> list = new JList<PrintableWay>(model);
+            final JList<PrintablePrimitive> list = new JList<PrintablePrimitive>(model);
+
+            // The listener for clicks on the list of features
             list.addMouseListener(new MouseAdapter()
             {
                 @Override
@@ -97,7 +115,29 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
                 {
                     // The index clicked in the list
                     final int index = list.locationToIndex(event.getPoint());
-                    layer.getData().setSelected(indexToIdentifier.get(index));
+                    final PrimitiveId identifier = indexToIdentifier.get(index);
+                    layer.getData().setSelected(identifier);
+                    zoomTo(layer.getData().getPrimitiveById(identifier));
+                }
+            });
+            list.addListSelectionListener(listSelectionEvent -> {
+                final int selectedIndex = listSelectionEvent.getFirstIndex();
+                final PrimitiveId identifier = indexToIdentifier.get(selectedIndex);
+                layer.getData().setSelected(identifier);
+                zoomTo(layer.getData().getPrimitiveById(identifier));
+            });
+
+            // The listener for clicks on the map
+            DataSet.addSelectionListener(selection -> {
+                for (final OsmPrimitive feature : selection)
+                {
+                    if (identifierToIndex.containsKey(feature.getPrimitiveId()))
+                    {
+                        final int idx = identifierToIndex.get(feature.getPrimitiveId());
+                        list.setSelectedIndex(idx);
+                        list.ensureIndexIsVisible(idx);
+                        break;
+                    }
                 }
             });
             this.panel.add(new JScrollPane(list), BorderLayout.CENTER);
@@ -123,5 +163,25 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
     @Override
     public void layerRemoved(final Layer arg0)
     {
+    }
+
+    /**
+     * Focus the map on a specific OSM primitive
+     *
+     * @param primitive
+     *            The primitive to zoom to
+     */
+    private void zoomTo(final OsmPrimitive primitive)
+    {
+        final BoundingXYVisitor v = new BoundingXYVisitor();
+        if (primitive instanceof Way)
+        {
+            v.visit((Way) primitive);
+        }
+        if (primitive instanceof Node)
+        {
+            v.visit((Node) primitive);
+        }
+        Main.map.mapView.zoomTo(v.getBounds());
     }
 }

@@ -1,18 +1,13 @@
 package org.openstreetmap.josm.plugins.geojson;
 
-import java.awt.Graphics2D;
-
 import javax.swing.Action;
 import javax.swing.Icon;
 
-import org.geojson.GeoJsonObject;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
-import org.openstreetmap.josm.data.osm.visitor.paint.MapRendererFactory;
-import org.openstreetmap.josm.data.osm.visitor.paint.Rendering;
-import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.geojson.DataSetBuilder.BoundedDataSet;
 import org.openstreetmap.josm.tools.ImageProvider;
 
@@ -22,17 +17,16 @@ import org.openstreetmap.josm.tools.ImageProvider;
  * @author Ian Dees <ian.dees@gmail.com>
  * @author matthieun <https://github.com/matthieun>
  */
-public class GeoJsonLayer extends Layer
+public class GeoJsonLayer extends OsmDataLayer
 {
     private final DataSet data;
     private Bounds bounds = null;
 
-    public GeoJsonLayer(final String name, final GeoJsonObject data)
+    public GeoJsonLayer(final String name, final BoundedDataSet data)
     {
-        super(name);
-        final BoundedDataSet boundedDataSet = new DataSetBuilder().build(data);
-        this.data = boundedDataSet.getDataSet();
-        this.bounds = boundedDataSet.getBounds();
+        super(data.getDataSet(), name, null);
+        this.data = data.getDataSet();
+        this.bounds = data.getBounds();
     }
 
     public Bounds getBounds()
@@ -51,18 +45,17 @@ public class GeoJsonLayer extends Layer
         return ImageProvider.get("data", "way");
     }
 
-    @Override
-    public Object getInfoComponent()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    // @Override
+    // public Object getInfoComponent()
+    // {
+    // // TODO Auto-generated method stub
+    // return null;
+    // }
 
     @Override
     public Action[] getMenuEntries()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new Action[0];
     }
 
     @Override
@@ -80,16 +73,15 @@ public class GeoJsonLayer extends Layer
     @Override
     public void mergeFrom(final Layer from)
     {
-        return;
     }
 
-    @Override
-    public void paint(final Graphics2D graphics, final MapView mapView, final Bounds box)
-    {
-        final Rendering painter = MapRendererFactory.getInstance().createActiveRenderer(graphics,
-                mapView, false);
-        painter.render(this.data, false, box);
-    }
+    // @Override
+    // public void paint(final Graphics2D graphics, final MapView mapView, final Bounds box)
+    // {
+    // final Rendering painter = MapRendererFactory.getInstance().createActiveRenderer(graphics,
+    // mapView, false);
+    // painter.render(this.data, false, box);
+    // }
 
     @Override
     public void visitBoundingBox(final BoundingXYVisitor v)

@@ -10,6 +10,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.ExtensionFileFilter;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.io.FileImporter;
+import org.openstreetmap.josm.plugins.geojson.DataSetBuilder.BoundedDataSet;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -61,8 +62,8 @@ public class GeoJsonFileImporter extends FileImporter
         {
             e.printStackTrace();
         }
-
-        this.layer = new GeoJsonLayer("GeoJSON: " + file.getName(), object);
+        final BoundedDataSet data = new DataSetBuilder().build(object);
+        this.layer = new GeoJsonLayer("GeoJSON: " + file.getName(), data);
         Main.main.addLayer(this.layer);
         System.out.println("Added layer.");
     }
