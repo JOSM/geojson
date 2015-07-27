@@ -69,6 +69,8 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
 
     private static final long serialVersionUID = 2182365950017739421L;
 
+    private static boolean listClick = false;
+
     private final GeoJsonLayer layer;
     private final JPanel panel;
 
@@ -114,6 +116,7 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
                 public void mouseClicked(final MouseEvent event)
                 {
                     // The index clicked in the list
+                    listClick = true;
                     final int index = list.locationToIndex(event.getPoint());
                     final PrimitiveId identifier = indexToIdentifier.get(index);
                     layer.getData().setSelected(identifier);
@@ -121,10 +124,13 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
                 }
             });
             list.addListSelectionListener(listSelectionEvent -> {
-                final int selectedIndex = listSelectionEvent.getFirstIndex();
-                final PrimitiveId identifier = indexToIdentifier.get(selectedIndex);
-                layer.getData().setSelected(identifier);
-                zoomTo(layer.getData().getPrimitiveById(identifier));
+                if (listClick)
+                {
+                    final int selectedIndex = listSelectionEvent.getFirstIndex();
+                    final PrimitiveId identifier = indexToIdentifier.get(selectedIndex);
+                    layer.getData().setSelected(identifier);
+                    zoomTo(layer.getData().getPrimitiveById(identifier));
+                }
             });
 
             // The listener for clicks on the map
@@ -134,7 +140,8 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
                     if (identifierToIndex.containsKey(feature.getPrimitiveId()))
                     {
                         final int idx = identifierToIndex.get(feature.getPrimitiveId());
-                        list.setSelectedIndex(idx);
+                        listClick = false;
+                        list.setSelectedIndices(new int[] { idx });
                         list.ensureIndexIsVisible(idx);
                         break;
                     }
