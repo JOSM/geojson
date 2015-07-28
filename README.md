@@ -5,7 +5,10 @@ A plugin for displaying geodata stored in a [geojson](https://geojson.org/) form
 
 Build
 ------
-
+Create a lib folder
+```
+mkdir lib/
+```
 Download josm
 ```
 gradle josm
@@ -32,3 +35,7 @@ cp build/libs/josm-geojson-0.0.0-SNAPSHOT.jar ~/Library/JOSM/plugins/geojson.jar
 ```
 
 And Josm should pick up the plugin at startup.
+
+To Activate it, Josm Preferences > Plugins > Search geojson > Click the check box > Ok.
+
+To open a `*.json` or `*.geojson` file, File > Open, select the file, and to make the list appear, click Windows > Geojson
