@@ -3,6 +3,11 @@ plugins
 
 apply from: 'dependencies.gradle'
 apply plugin: 'java'
+apply plugin: 'checkstyle'
+
+checkstyle {
+    toolVersion = "6.0"
+}
 
 group = 'org.openstreetmap.josm.plugins'
 version = '0.0.0-SNAPSHOT'
