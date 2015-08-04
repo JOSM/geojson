@@ -99,13 +99,17 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
             // Build the maps and add the primitives to the list's model
             for (final OsmPrimitive osmPrimitive : layer.getData().allPrimitives())
             {
-                if (osmPrimitive instanceof Way)
+                if (osmPrimitive instanceof Node)
                 {
-                    model.addElement(new PrintablePrimitive(index, osmPrimitive));
-                    indexToIdentifier.put(index, osmPrimitive.getPrimitiveId());
-                    identifierToIndex.put(osmPrimitive.getPrimitiveId(), index);
-                    index++;
+                    if (osmPrimitive.getKeys().isEmpty())
+                    {
+                        continue;
+                    }
                 }
+                model.addElement(new PrintablePrimitive(index, osmPrimitive));
+                indexToIdentifier.put(index, osmPrimitive.getPrimitiveId());
+                identifierToIndex.put(osmPrimitive.getPrimitiveId(), index);
+                index++;
             }
             final JList<PrintablePrimitive> list = new JList<PrintablePrimitive>(model);
 

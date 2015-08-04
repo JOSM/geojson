@@ -67,7 +67,6 @@ public class DataSetBuilder
                             coordinate.getLongitude());
                     final Node node = new Node(latlon);
                     node.setKeys(getTags(feature));
-
                     dataSet.addPrimitive(node);
                 }
                 if (geometry instanceof LineString)
@@ -96,7 +95,6 @@ public class DataSetBuilder
                     }
                     way.setNodes(nodes);
                     way.setKeys(getTags(feature));
-
                     dataSet.addPrimitive(way);
                 }
                 else if (geometry instanceof Polygon)
@@ -139,7 +137,6 @@ public class DataSetBuilder
                     }
                     way.setNodes(nodes);
                     way.setKeys(getTags(feature));
-
                     dataSet.addPrimitive(way);
                 }
             }
