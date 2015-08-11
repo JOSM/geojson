@@ -25,6 +25,7 @@ public class GeoJsonLayer extends OsmDataLayer
     public GeoJsonLayer(final String name, final BoundedDataSet data)
     {
         super(data.getDataSet(), name, null);
+        // super(name);
         this.data = data.getDataSet();
         this.bounds = data.getBounds();
     }
@@ -69,6 +70,12 @@ public class GeoJsonLayer extends OsmDataLayer
     {
         return false;
     }
+
+    // @Override
+    // public boolean isModified()
+    // {
+    // return false;
+    // }
 
     @Override
     public void mergeFrom(final Layer from)

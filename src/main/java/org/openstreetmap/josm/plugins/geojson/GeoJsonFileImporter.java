@@ -8,6 +8,8 @@ import java.io.IOException;
 import org.geojson.GeoJsonObject;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.ExtensionFileFilter;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.io.FileImporter;
 import org.openstreetmap.josm.plugins.geojson.DataSetBuilder.BoundedDataSet;
@@ -26,8 +28,8 @@ public class GeoJsonFileImporter extends FileImporter
 
     public GeoJsonFileImporter()
     {
-        super(new ExtensionFileFilter("geojson,json", "geojson", tr("GeoJSON file")
-                + " (*.geojson,*.json)"));
+        super(new ExtensionFileFilter("geojson,json", "geojson",
+                tr("GeoJSON file") + " (*.geojson,*.json)"));
     }
 
     public GeoJsonLayer getLayer()
@@ -66,5 +68,6 @@ public class GeoJsonFileImporter extends FileImporter
         this.layer = new GeoJsonLayer("GeoJSON: " + file.getName(), data);
         Main.main.addLayer(this.layer);
         System.out.println("Added layer.");
+        Main.main.addLayer(new OsmDataLayer(new DataSet(), "OSM Data Layer", null));
     }
 }
