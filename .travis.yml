@@ -1,4 +1,6 @@
 language: java
 jdk:
   - oraclejdk8
-install: ./install-josm.sh
+install:
+  - chmod ug+x install-josm.sh
+  - ./install-josm.sh
