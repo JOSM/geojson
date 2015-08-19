@@ -1,10 +1,13 @@
-josm-geojson
-============
+# josm-geojson
 
 A plugin for displaying geodata stored in a [geojson](https://geojson.org/) format as a layer in JOSM.
 
-Build
-------
+## Status
+
+[![Build Status](https://travis-ci.org/matthieun/josm-geojson.svg?branch=master)](https://travis-ci.org/matthieun/josm-geojson)
+
+## Build
+
 Create a lib folder
 ```
 mkdir lib/
@@ -18,8 +21,7 @@ Build
 gradle clean build
 ```
 
-Run
-------
+## Run
 
 Depending on the JOSM version used...
 
