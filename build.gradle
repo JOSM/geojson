@@ -4,11 +4,11 @@ plugins {
 
 apply from: 'dependencies.gradle'
 apply plugin: 'java'
-apply plugin: 'checkstyle'
+//apply plugin: 'checkstyle'
 
-checkstyle {
-    toolVersion = "6.0"
-}
+//checkstyle {
+//    toolVersion = "6.0"
+//}
 
 group = 'org.openstreetmap.josm.plugins'
 version = '0.0.0-SNAPSHOT'
@@ -16,15 +16,23 @@ version = '0.0.0-SNAPSHOT'
 // Change JOSM version (if needed) before you build
 project.ext.josm_version='8599'
 project.ext.josm_location='download'
-//project.ext.josm_location='download/Archiv'
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
 
 repositories
 { mavenCentral() }
 
+repositories {
+    flatDir(dirs: file('lib/'))
+}
+configurations {
+    provided
+}
+sourceSets.main.compileClasspath += configurations.provided
 dependencies
 {
     // Josm is not on Maven Central
-    compile files("lib/josm-snapshot-" + josm_version +".jar")
+    provided ':josm@jar'
     compile packages.geojsonjackson
     compile packages.jackson.core
     compile packages.jackson.databind
@@ -65,5 +73,5 @@ import de.undercouch.gradle.tasks.download.Download
 
 task josm(type: Download) {
     src 'http://josm.openstreetmap.de/' + josm_location + '/josm-snapshot-' + josm_version + '.jar'
-    dest 'lib/'
+    dest 'lib/josm.jar'
 }

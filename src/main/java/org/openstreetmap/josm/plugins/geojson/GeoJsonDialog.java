@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.geojson;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,8 +11,11 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.SelectionChangedListener;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -127,27 +131,30 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener
                     zoomTo(layer.getData().getPrimitiveById(identifier));
                 }
             });
-            list.addListSelectionListener(listSelectionEvent -> {
-                if (listClick)
-                {
-                    final int selectedIndex = listSelectionEvent.getFirstIndex();
-                    final PrimitiveId identifier = indexToIdentifier.get(selectedIndex);
-                    layer.getData().setSelected(identifier);
-                    zoomTo(layer.getData().getPrimitiveById(identifier));
+            list.addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(final ListSelectionEvent listSelectionEvent) {
+                    if (listClick) {
+                        final int selectedIndex = listSelectionEvent.getFirstIndex();
+                        final PrimitiveId identifier = indexToIdentifier.get(selectedIndex);
+                        layer.getData().setSelected(identifier);
+                        GeoJsonDialog.this.zoomTo(layer.getData().getPrimitiveById(identifier));
+                    }
                 }
             });
 
             // The listener for clicks on the map
-            DataSet.addSelectionListener(selection -> {
-                for (final OsmPrimitive feature : selection)
-                {
-                    if (identifierToIndex.containsKey(feature.getPrimitiveId()))
-                    {
-                        final int idx = identifierToIndex.get(feature.getPrimitiveId());
-                        listClick = false;
-                        list.setSelectedIndices(new int[] { idx });
-                        list.ensureIndexIsVisible(idx);
-                        break;
+            DataSet.addSelectionListener(new SelectionChangedListener() {
+                @Override
+                public void selectionChanged(final Collection<? extends OsmPrimitive> selection) {
+                    for (final OsmPrimitive feature : selection) {
+                        if (identifierToIndex.containsKey(feature.getPrimitiveId())) {
+                            final int idx = identifierToIndex.get(feature.getPrimitiveId());
+                            listClick = false;
+                            list.setSelectedIndices(new int[]{idx});
+                            list.ensureIndexIsVisible(idx);
+                            break;
+                        }
                     }
                 }
             });
