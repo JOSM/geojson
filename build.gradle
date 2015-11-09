@@ -14,17 +14,16 @@ group = 'org.openstreetmap.josm.plugins'
 version = '0.0.0-SNAPSHOT'
 
 // Change JOSM version (if needed) before you build
-project.ext.josm_version='8599'
+project.ext.josm_version='8969'
 project.ext.josm_location='download'
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
-repositories
-{ mavenCentral() }
-
 repositories {
+    mavenCentral()
     flatDir(dirs: file('lib/'))
 }
+
 configurations {
     provided
 }

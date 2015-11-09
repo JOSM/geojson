@@ -4,7 +4,7 @@ A plugin for displaying geodata stored in a [geojson](https://geojson.org/) form
 
 ## Status
 
-[![Build Status](https://travis-ci.org/matthieun/josm-geojson.svg?branch=master)](https://travis-ci.org/matthieun/josm-geojson)
+<!-- [![Build Status](https://travis-ci.org/matthieun/josm-geojson.svg?branch=master)](https://travis-ci.org/matthieun/josm-geojson) -->
 
 ## Build
 

@@ -1,6 +1,6 @@
 project.ext.versions = [
     junit: '4.8.2',
-    geojsonjackson: '1.5',
+    geojsonjackson: '1.5.1',
     jackson: '2.5.4',
 ]
 
