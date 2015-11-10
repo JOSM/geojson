@@ -7,6 +7,12 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.geojson.*;
+import org.geojson.jackson.CrsType;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.transform.IdentityTransform;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.*;
@@ -36,16 +42,35 @@ public class DataSetBuilder {
         }
     }
 
+    private MathTransform transform;
+    private DataSet dataSet;
+
     public BoundedDataSet build(final GeoJsonObject data) {
-        DataSet dataSet = new DataSet();
+        transform = IdentityTransform.create(2);
+        dataSet = new DataSet();
+
+        if (data.getCrs() != null) {
+            if (data.getCrs().getType() != CrsType.name) {
+                throw new UnsupportedOperationException("Only 'name' CRS are supported");
+            }
+
+            try {
+                org.opengis.referencing.crs.CoordinateReferenceSystem crs = CRS.decode(data.getCrs().getProperties().get("name").toString(), true);
+                org.opengis.referencing.crs.CoordinateReferenceSystem osmCrs = CRS.decode("EPSG:4326");
+                transform = CRS.findMathTransform(crs, osmCrs);
+            } catch (FactoryException e) {
+                throw new UnsupportedOperationException("Unknown CRS " + data.getCrs().getProperties().get("name"), e);
+            }
+        }
+
         if (data instanceof FeatureCollection) {
-            processFeatureCollection(dataSet, (FeatureCollection) data);
+            processFeatureCollection((FeatureCollection) data);
         } else if (data instanceof GeometryCollection) {
-            processGeometryCollection(dataSet, null, (GeometryCollection) data);
+            processGeometryCollection(null, (GeometryCollection) data);
         } else if (data instanceof Feature) {
-            processFeature(dataSet, (Feature) data);
+            processFeature((Feature) data);
         } else {
-            processGeometry(dataSet, null, data);
+            processGeometry(null, data);
         }
 
         Bounds bounds = null;
@@ -55,88 +80,88 @@ public class DataSetBuilder {
         return new BoundedDataSet(dataSet, bounds);
     }
 
-    private void processFeatureCollection(DataSet dataSet, FeatureCollection data) {
+    private void processFeatureCollection(FeatureCollection data) {
         for (final Feature feature : data) {
-            processFeature(dataSet, feature);
+            processFeature(feature);
         }
     }
 
-    private void processGeometryCollection(DataSet dataSet, Feature feature, GeometryCollection geometryCollection) {
+    private void processGeometryCollection(Feature feature, GeometryCollection geometryCollection) {
         for (GeoJsonObject geometry : geometryCollection) {
-            processGeometry(dataSet, feature, geometry);
+            processGeometry(feature, geometry);
         }
     }
 
-    private void processFeature(DataSet dataSet, Feature feature) {
-        processGeometry(dataSet, feature, feature.getGeometry());
+    private void processFeature(Feature feature) {
+        processGeometry(feature, feature.getGeometry());
     }
 
-    private void processMultiPoint(DataSet dataSet, Feature feature, MultiPoint multiPoint) {
+    private void processMultiPoint(Feature feature, MultiPoint multiPoint) {
         for (LngLatAlt point : multiPoint.getCoordinates()) {
-            processPoint(dataSet, feature, point);
+            processPoint(feature, point);
         }
     }
 
-    private void processGeometry(DataSet dataSet, Feature feature, GeoJsonObject geometry) {
+    private void processGeometry(Feature feature, GeoJsonObject geometry) {
         if (geometry instanceof Feature) {
-            processGeometry(dataSet, (Feature) geometry, ((Feature) geometry).getGeometry());
+            processGeometry((Feature) geometry, ((Feature) geometry).getGeometry());
         } else {
             if (geometry instanceof Point) {
-                processPoint(dataSet, feature, ((Point) geometry).getCoordinates());
+                processPoint(feature, ((Point) geometry).getCoordinates());
             } else if (geometry instanceof LineString) {
-                processLineString(dataSet, feature, ((LineString) geometry).getCoordinates());
+                processLineString(feature, ((LineString) geometry).getCoordinates());
             } else if (geometry instanceof Polygon) {
-                processPolygon(dataSet, feature, ((Polygon) geometry).getCoordinates());
+                processPolygon(feature, ((Polygon) geometry).getCoordinates());
             } else if (geometry instanceof MultiPoint) {
-                processMultiPoint(dataSet, feature, (MultiPoint) geometry);
+                processMultiPoint(feature, (MultiPoint) geometry);
             } else if (geometry instanceof MultiLineString) {
-                processMultiLineString(dataSet, feature, (MultiLineString) geometry);
+                processMultiLineString(feature, (MultiLineString) geometry);
             } else if (geometry instanceof MultiPolygon) {
-                processMultiPolygon(dataSet, feature, (MultiPolygon) geometry);
+                processMultiPolygon(feature, (MultiPolygon) geometry);
             } else if (geometry instanceof GeometryCollection) {
-                processGeometryCollection(dataSet, feature, (GeometryCollection) geometry);
+                processGeometryCollection(feature, (GeometryCollection) geometry);
             }
         }
     }
 
-    private void processMultiPolygon(DataSet dataSet, Feature feature, MultiPolygon geometry) {
+    private void processMultiPolygon(Feature feature, MultiPolygon geometry) {
         for (List<List<LngLatAlt>> polygon : geometry.getCoordinates()) {
-            processPolygon(dataSet, feature, polygon);
+            processPolygon(feature, polygon);
         }
     }
 
-    private void processMultiLineString(DataSet dataSet, Feature feature, MultiLineString multiLineString) {
+    private void processMultiLineString(Feature feature, MultiLineString multiLineString) {
         for (List<LngLatAlt> coordinates : multiLineString.getCoordinates()) {
-            processLineString(dataSet, feature, coordinates);
+            processLineString(feature, coordinates);
         }
     }
 
-    private void processPoint(DataSet dataSet, Feature feature, LngLatAlt geometry) {
-        final Node node = createNode(dataSet, geometry);
+    private void processPoint(Feature feature, LngLatAlt geometry) {
+        final Node node = createNode(geometry);
 
         fillTagsFromFeature(feature, node);
     }
 
-    private void processLineString(DataSet dataSet, Feature feature, List<LngLatAlt> coordinates) {
-        final Way way = createWay(dataSet, coordinates);
+    private void processLineString(Feature feature, List<LngLatAlt> coordinates) {
+        final Way way = createWay(coordinates);
 
         fillTagsFromFeature(feature, way);
     }
 
-    private void processPolygon(DataSet dataSet, Feature feature, List<List<LngLatAlt>> coordinates) {
+    private void processPolygon(Feature feature, List<List<LngLatAlt>> coordinates) {
         if (coordinates.size() == 1) {
             // create simple way
-            createWay(dataSet, coordinates.get(0));
+            createWay(coordinates.get(0));
 
         } else if (coordinates.size() > 1) {
             // create multipolygon
             final Relation multipolygon = new Relation();
             multipolygon.put("type", "multipolygon");
-            Way way = createWay(dataSet, coordinates.get(0));
+            Way way = createWay(coordinates.get(0));
             multipolygon.addMember(new RelationMember("outer", way));
 
             for (List<LngLatAlt> interiorRings : coordinates.subList(1, coordinates.size())) {
-                way = createWay(dataSet, interiorRings);
+                way = createWay(interiorRings);
                 multipolygon.addMember(new RelationMember("inner", way));
             }
             fillTagsFromFeature(feature, multipolygon);
@@ -150,8 +175,14 @@ public class DataSetBuilder {
         }
     }
 
-    private Node createNode(DataSet dataSet, LngLatAlt point) {
-        final LatLon latlon = new LatLon(point.getLatitude(), point.getLongitude());
+    private Node createNode(LngLatAlt point) {
+        double[] pt = new double[] {point.getLongitude(), point.getLatitude()};
+        try {
+            transform.transform(pt, 0, pt, 0, 1);
+        } catch (TransformException e) {
+            throw new UnsupportedOperationException("Cannot transform a point from the input dataset to the EPSG:4326", e);
+        }
+        final LatLon latlon = new LatLon(pt[1], pt[0]);
         Node node = new Node(latlon);
 
         dataSet.addPrimitive(node);
@@ -159,13 +190,13 @@ public class DataSetBuilder {
         return node;
     }
 
-    private Way createWay(DataSet dataSet, List<LngLatAlt> coordinates) {
+    private Way createWay(List<LngLatAlt> coordinates) {
         final Way way = new Way();
 
         final List<Node> nodes = new ArrayList<>(coordinates.size());
 
         for (final LngLatAlt point : coordinates) {
-            final Node node = createNode(dataSet, point);
+            final Node node = createNode(point);
 
             nodes.add(node);
         }

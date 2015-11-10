@@ -30,8 +30,10 @@ configurations {
 sourceSets.main.compileClasspath += configurations.provided
 dependencies
 {
-    // Josm is not on Maven Central
+    // Josm and required plugins are not on Maven Central
     provided ':josm@jar'
+    provided ':geotools@jar'
+    provided ':opendata@jar'
     compile packages.geojsonjackson
     compile packages.jackson.core
     compile packages.jackson.databind
@@ -62,8 +64,9 @@ jar
         "Plugin-Icon": "images/preferences/geojson.png",
         "Plugin-Link": "http://wiki.openstreetmap.org/index.php/JOSM/Plugins/GeoJSON",
         "Plugin-Mainversion": "7777",
-        "Plugin-Version": "31241",
+        "Plugin-Version": "31243",
         "Plugin-Canloadatruntime": "true",
+        "Plugin-Requires": "opendata",
         )
     }
 }
@@ -73,4 +76,9 @@ import de.undercouch.gradle.tasks.download.Download
 task josm(type: Download) {
     src 'http://josm.openstreetmap.de/' + josm_location + '/josm-snapshot-' + josm_version + '.jar'
     dest 'lib/josm.jar'
+}
+task dependencies(type:Download, dependsOn: 'josm') {
+    src (['http://svn.openstreetmap.org/applications/editors/josm/dist/opendata.jar',
+            'http://svn.openstreetmap.org/applications/editors/josm/dist/geotools.jar'])
+    dest 'lib/'
 }

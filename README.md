@@ -12,9 +12,9 @@ Create a lib folder
 ```
 mkdir lib/
 ```
-Download josm
+Download josm and dependent plugins
 ```
-gradle josm
+gradle dependencies
 ```
 Build
 ```
