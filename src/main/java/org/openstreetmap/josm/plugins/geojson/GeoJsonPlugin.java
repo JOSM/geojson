@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.geojson;
 
 import org.openstreetmap.josm.actions.ExtensionFileFilter;
 import org.openstreetmap.josm.gui.MapFrame;
+import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 
@@ -28,8 +29,9 @@ public class GeoJsonPlugin extends Plugin
     {
         if (newFrame != null)
         {
-            final GeoJsonDialog dialog = new GeoJsonDialog(this.geoJsonFileImporter.getLayer());
+            final GeoJsonDialog dialog = new GeoJsonDialog();
             newFrame.addToggleDialog(dialog);
+            MapView.addLayerChangeListener(dialog);
             System.out.println("Added new toggle dialog");
         }
     }

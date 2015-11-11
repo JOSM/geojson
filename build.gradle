@@ -64,7 +64,7 @@ jar
         "Plugin-Icon": "images/preferences/geojson.png",
         "Plugin-Link": "http://wiki.openstreetmap.org/index.php/JOSM/Plugins/GeoJSON",
         "Plugin-Mainversion": "7777",
-        "Plugin-Version": "31243",
+        "Plugin-Version": "31244",
         "Plugin-Canloadatruntime": "true",
         "Plugin-Requires": "opendata",
         )
