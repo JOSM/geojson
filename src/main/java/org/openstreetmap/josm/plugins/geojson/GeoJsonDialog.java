@@ -1,16 +1,11 @@
 package org.openstreetmap.josm.plugins.geojson;
 
 import java.awt.BorderLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -72,7 +67,7 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener {
     }
 
     private static final long serialVersionUID = 2182365950017739421L;
-    private static boolean listClick = false;
+    private static boolean stopProcessingCallbacks = false;
 
     private GeoJsonLayer layer;
 
@@ -98,28 +93,21 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener {
         this.indexToIdentifier = new HashMap<>();
         this.identifierToIndex = new HashMap<>();
 
-        // The listener for clicks on the list of features
-        list.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseClicked(final MouseEvent event)
-            {
-                // The index clicked in the list
-                listClick = true;
-                final int index = list.locationToIndex(event.getPoint());
-                final PrimitiveId identifier = indexToIdentifier.get(index);
-                layer.getData().setSelected(identifier);
-                zoomTo(layer.getData().getPrimitiveById(identifier));
-            }
-        });
         list.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(final ListSelectionEvent listSelectionEvent) {
-                if (listClick) {
-                    final int selectedIndex = listSelectionEvent.getFirstIndex();
+                if (stopProcessingCallbacks) {
+                    return;
+                }
+                try {
+                    stopProcessingCallbacks = true;
+                    JList selectionModel = (JList) listSelectionEvent.getSource();
+                    final int selectedIndex = selectionModel.getMinSelectionIndex();
                     final PrimitiveId identifier = indexToIdentifier.get(selectedIndex);
                     layer.getData().setSelected(identifier);
                     zoomTo(layer.getData().getPrimitiveById(identifier));
+                } finally {
+                    stopProcessingCallbacks = false;
                 }
             }
         });
@@ -127,14 +115,21 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener {
         DataSet.addSelectionListener(new SelectionChangedListener() {
             @Override
             public void selectionChanged(final Collection<? extends OsmPrimitive> selection) {
-                for (final OsmPrimitive feature : selection) {
-                    if (identifierToIndex.containsKey(feature.getPrimitiveId())) {
-                        final int idx = identifierToIndex.get(feature.getPrimitiveId());
-                        listClick = false;
-                        list.setSelectedIndices(new int[]{idx});
-                        list.ensureIndexIsVisible(idx);
-                        break;
+                if (stopProcessingCallbacks) {
+                    return;
+                }
+                try {
+                    stopProcessingCallbacks = true;
+                    for (final OsmPrimitive feature : selection) {
+                        if (identifierToIndex.containsKey(feature.getPrimitiveId())) {
+                            final int idx = identifierToIndex.get(feature.getPrimitiveId());
+                            list.setSelectedIndices(new int[]{idx});
+                            list.ensureIndexIsVisible(idx);
+                            break;
+                        }
                     }
+                } finally {
+                    stopProcessingCallbacks = false;
                 }
             }
         });
@@ -166,11 +161,8 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener {
     @Override
     public void activeLayerChange(final Layer oldLayer, final Layer newLayer) {
         if (newLayer instanceof GeoJsonLayer) {
-            showDialog();
             this.layer = (GeoJsonLayer) newLayer;
             showDataFromLayer();
-        } else {
-            hideDialog();
         }
     }
 
@@ -199,15 +191,13 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener {
         if (primitive == null) {
             return;
         }
-        final BoundingXYVisitor v = new BoundingXYVisitor();
-        if (primitive instanceof Way)
-        {
-            v.visit((Way) primitive);
-        }
         if (primitive instanceof Node)
         {
-            v.visit((Node) primitive);
+            Main.map.mapView.zoomTo(((Node) primitive).getCoor());
+            return;
         }
+        final BoundingXYVisitor v = new BoundingXYVisitor();
+        v.visit((Way) primitive);
         Main.map.mapView.zoomTo(v.getBounds());
     }
 }

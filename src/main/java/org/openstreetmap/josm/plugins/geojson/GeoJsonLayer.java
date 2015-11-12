@@ -25,7 +25,6 @@ public class GeoJsonLayer extends OsmDataLayer
     public GeoJsonLayer(final String name, final BoundedDataSet data)
     {
         super(data.getDataSet(), name, null);
-        // super(name);
         this.data = data.getDataSet();
         this.bounds = data.getBounds();
     }
@@ -46,49 +45,11 @@ public class GeoJsonLayer extends OsmDataLayer
         return ImageProvider.get("data", "way");
     }
 
-    // @Override
-    // public Object getInfoComponent()
-    // {
-    // // TODO Auto-generated method stub
-    // return null;
-    // }
-
-    @Override
-    public Action[] getMenuEntries()
-    {
-        return new Action[0];
-    }
-
     @Override
     public String getToolTipText()
     {
         return "GeoJSON";
     }
-
-    @Override
-    public boolean isMergable(final Layer other)
-    {
-        return false;
-    }
-
-    // @Override
-    // public boolean isModified()
-    // {
-    // return false;
-    // }
-
-    @Override
-    public void mergeFrom(final Layer from)
-    {
-    }
-
-    // @Override
-    // public void paint(final Graphics2D graphics, final MapView mapView, final Bounds box)
-    // {
-    // final Rendering painter = MapRendererFactory.getInstance().createActiveRenderer(graphics,
-    // mapView, false);
-    // painter.render(this.data, false, box);
-    // }
 
     @Override
     public void visitBoundingBox(final BoundingXYVisitor v)

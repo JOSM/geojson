@@ -28,7 +28,6 @@ import javax.swing.*;
  * @author matthieun <https://github.com/matthieun>
  */
 public class GeoJsonFileImporter extends FileImporter {
-    public static final Logger LOGGER = Logger.getLogger(GeoJsonFileImporter.class.getName());
 
     public GeoJsonFileImporter() {
         super(new ExtensionFileFilter("geojson,json", "geojson",
@@ -40,7 +39,7 @@ public class GeoJsonFileImporter extends FileImporter {
 
         progressMonitor.beginTask(tr("Loading json file..."));
         progressMonitor.setTicksCount(2);
-        LOGGER.info("Parsing GeoJSON: " + file.getAbsolutePath());
+        Main.info("Parsing GeoJSON: " + file.getAbsolutePath());
         try {
             GeoJsonObject object = new ObjectMapper().readValue(file, GeoJsonObject.class);
 
@@ -48,11 +47,11 @@ public class GeoJsonFileImporter extends FileImporter {
 
             final BoundedDataSet data = new DataSetBuilder().build(object);
 
-            Layer layer = new GeoJsonLayer("GeoJSON: " + file.getName(), data);
+            Layer layer = new GeoJsonLayer(tr("Data Layer from GeoJSON: ") + file.getName(), data);
             Main.main.addLayer(layer);
         } catch (final Exception e) {
-            LOGGER.log(Level.SEVERE, "Error while reading json file!", e);
-            JOptionPane.showMessageDialog(null, tr("Error loading geojson file {}", file.getAbsolutePath()), tr("Error"), JOptionPane.WARNING_MESSAGE);
+            Main.error("Error while reading json file!", e);
+            JOptionPane.showMessageDialog(null, tr("Error loading geojson file {0}", file.getAbsolutePath()), tr("Error"), JOptionPane.WARNING_MESSAGE);
         } finally {
             progressMonitor.finishTask();
         }
