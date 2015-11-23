@@ -1,27 +1,19 @@
 package org.openstreetmap.josm.plugins.geojson;
 
-import static org.openstreetmap.josm.tools.I18n.tr;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geojson.GeoJsonObject;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.ExtensionFileFilter;
-import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.io.FileImporter;
 import org.openstreetmap.josm.plugins.geojson.DataSetBuilder.BoundedDataSet;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import javax.swing.*;
+import java.io.File;
+
+import static org.openstreetmap.josm.tools.I18n.tr;
 
 /**
  * @author Ian Dees <ian.dees@gmail.com>
@@ -41,7 +33,9 @@ public class GeoJsonFileImporter extends FileImporter {
         progressMonitor.setTicksCount(2);
         Main.info("Parsing GeoJSON: " + file.getAbsolutePath());
         try {
-            GeoJsonObject object = new ObjectMapper().readValue(file, GeoJsonObject.class);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            GeoJsonObject object = mapper.readValue(file, GeoJsonObject.class);
 
             progressMonitor.worked(1);
 

@@ -11,7 +11,7 @@ apply plugin: 'java'
 //}
 
 group = 'org.openstreetmap.josm.plugins'
-version = '0.0.0-SNAPSHOT'
+version = '0.0.1-SNAPSHOT'
 
 // Change JOSM version (if needed) before you build
 project.ext.josm_version='8969'
@@ -64,7 +64,7 @@ jar
         "Plugin-Icon": "images/preferences/geojson.png",
         "Plugin-Link": "http://wiki.openstreetmap.org/index.php/JOSM/Plugins/GeoJSON",
         "Plugin-Mainversion": "7777",
-        "Plugin-Version": "31244",
+        "Plugin-Version": "31245",
         "Plugin-Canloadatruntime": "true",
         "Plugin-Requires": "opendata",
         )
