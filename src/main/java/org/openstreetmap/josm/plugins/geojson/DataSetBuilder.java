@@ -1,26 +1,37 @@
 package org.openstreetmap.josm.plugins.geojson;
 
+import org.geojson.*;
+import org.geojson.jackson.CrsType;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.ReferencingFactoryFinder;
+import org.geotools.referencing.operation.transform.IdentityTransform;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CRSFactory;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
+import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.geojson.*;
-import org.geojson.jackson.CrsType;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.operation.transform.IdentityTransform;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
-import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.data.osm.*;
-
 /**
  * @author matthieun
  */
 public class DataSetBuilder {
+
+    public static final int MAX_LINK_LENGTH = 102400;
+
     /**
      * @author matthieun
      */
@@ -49,17 +60,45 @@ public class DataSetBuilder {
         transform = IdentityTransform.create(2);
         dataSet = new DataSet();
 
-        if (data.getCrs() != null) {
-            if (data.getCrs().getType() != CrsType.name) {
-                throw new UnsupportedOperationException("Only 'name' CRS are supported");
-            }
+        if (data.getCrs() != null && data.getCrs().getProperties() != null) {
+            if (data.getCrs().getType() == CrsType.name) {
 
-            try {
-                org.opengis.referencing.crs.CoordinateReferenceSystem crs = CRS.decode(data.getCrs().getProperties().get("name").toString(), true);
-                org.opengis.referencing.crs.CoordinateReferenceSystem osmCrs = CRS.decode("EPSG:4326");
-                transform = CRS.findMathTransform(crs, osmCrs);
-            } catch (FactoryException e) {
-                throw new UnsupportedOperationException("Unknown CRS " + data.getCrs().getProperties().get("name"), e);
+                String crsName = data.getCrs().getProperties().get("name").toString();
+                try {
+                    CoordinateReferenceSystem crs = CRS.decode(crsName, true);
+                    CoordinateReferenceSystem osmCrs = CRS.decode("EPSG:4326");
+                    transform = CRS.findMathTransform(crs, osmCrs);
+                } catch (FactoryException e) {
+                    Main.error("Unknown CRS " + crsName, e);
+                    throw new UnsupportedOperationException();
+                }
+            } else if (data.getCrs().getType() == CrsType.link) {
+                String link = data.getCrs().getProperties().get("href").toString();
+                String type = data.getCrs().getProperties().get("type").toString();
+                if (type.contains("proj4")) {
+                    throw new UnsupportedOperationException("Given type of linked CRS is not supported: " + type);
+                }
+                try {
+                    URL url = new URL(link);
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+                        String inputLine;
+                        StringBuilder content = new StringBuilder();
+                        while ((inputLine = reader.readLine()) != null) {
+                            content.append(inputLine);
+                            if (inputLine.length() > MAX_LINK_LENGTH) {
+                                throw new UnsupportedOperationException("Linked CRS is too long! " + link);
+                            }
+                        }
+                        CRSFactory crsFactory = ReferencingFactoryFinder.getCRSFactory(null);
+                        CoordinateReferenceSystem crs = crsFactory.createFromWKT(content.toString());
+                        CoordinateReferenceSystem osmCrs = CRS.decode("EPSG:4326");
+                        transform = CRS.findMathTransform(crs, osmCrs);
+                    }
+                } catch (IOException e) {
+                    throw new UnsupportedOperationException("Problems with parsing URL or loading the data: " + link + ", " + e.getMessage(), e);
+                } catch (FactoryException e) {
+                    throw new UnsupportedOperationException("Factory exception while creating linked CRS: " + e.getMessage(), e);
+                }
             }
         }
 
