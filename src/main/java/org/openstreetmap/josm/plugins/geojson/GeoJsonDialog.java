@@ -5,7 +5,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -17,16 +20,20 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
-import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
-import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
+import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
+import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeListener;
 
 /**
  * Dialog that contains a listing of all the features opened by the GeoJson plugin.
  *
  * @author matthieun
  */
-public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener {
+public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, ActiveLayerChangeListener {
     /**
      * Wrapper for an item to be displayed in the list
      *
@@ -101,7 +108,7 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener {
                 }
                 try {
                     stopProcessingCallbacks = true;
-                    JList selectionModel = (JList) listSelectionEvent.getSource();
+                    JList<?> selectionModel = (JList<?>) listSelectionEvent.getSource();
                     final int selectedIndex = selectionModel.getMinSelectionIndex();
                     final PrimitiveId identifier = indexToIdentifier.get(selectedIndex);
                     layer.getData().setSelected(identifier);
@@ -159,24 +166,29 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener {
     }
 
     @Override
-    public void activeLayerChange(final Layer oldLayer, final Layer newLayer) {
-        if (newLayer instanceof GeoJsonLayer) {
-            this.layer = (GeoJsonLayer) newLayer;
+    public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
+        if (Main.getLayerManager().getActiveLayer() instanceof GeoJsonLayer) {
+            this.layer = (GeoJsonLayer) Main.getLayerManager().getActiveLayer();
             showDataFromLayer();
         }
     }
 
     @Override
-    public void layerAdded(final Layer newLayer)
+    public void layerAdded(LayerAddEvent e)
     {
-        if (newLayer == this.layer)
+        if (e.getAddedLayer() == this.layer)
         {
-            Main.map.mapView.moveLayer(newLayer, 0);
+            Main.map.mapView.moveLayer(e.getAddedLayer(), 0);
         }
     }
 
     @Override
-    public void layerRemoved(final Layer arg0)
+    public void layerRemoving(LayerRemoveEvent e)
+    {
+    }
+    
+    @Override
+    public void layerOrderChanged(LayerOrderChangeEvent e)
     {
     }
 

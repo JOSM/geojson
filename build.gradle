@@ -11,10 +11,10 @@ apply plugin: 'java'
 //}
 
 group = 'org.openstreetmap.josm.plugins'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 
 // Change JOSM version (if needed) before you build
-project.ext.josm_version='8969'
+project.ext.josm_version='10422'
 project.ext.josm_location='download'
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
@@ -59,12 +59,12 @@ jar
     {
         attributes("Author": "Ian Dees and matthieun",
         "Plugin-Class": "org.openstreetmap.josm.plugins.geojson.GeoJsonPlugin",
-        "Plugin-Date": "2015-06-07T23:12:29.582966Z",
+        "Plugin-Date": "2016-06-20T00:00:00.000000Z",
         "Plugin-Description": "Allows you to view a GeoJSON file as a layer.",
         "Plugin-Icon": "images/preferences/geojson.png",
         "Plugin-Link": "http://wiki.openstreetmap.org/index.php/JOSM/Plugins/GeoJSON",
-        "Plugin-Mainversion": "7777",
-        "Plugin-Version": "31245",
+        "Plugin-Mainversion": "10407",
+        "Plugin-Version": "31246",
         "Plugin-Canloadatruntime": "true",
         "Plugin-Requires": "opendata",
         )
