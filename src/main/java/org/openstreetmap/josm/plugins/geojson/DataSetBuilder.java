@@ -182,7 +182,7 @@ public class DataSetBuilder {
     }
 
     private void processLineString(Feature feature, List<LngLatAlt> coordinates) {
-        if (coordinates.size() == 0) {
+        if (coordinates.isEmpty()) {
             return;
         }
         final Way way = createWay(coordinates);
@@ -191,11 +191,11 @@ public class DataSetBuilder {
     }
 
     private void processPolygon(Feature feature, List<List<LngLatAlt>> coordinates) {
-        if (coordinates.size() == 0) {
+        if (coordinates.isEmpty()) {
             return;
         }
         for (List<LngLatAlt> ring : coordinates) {
-            if (ring.size() == 0) {
+            if (ring.isEmpty()) {
                 return;
             }
         }
@@ -241,7 +241,7 @@ public class DataSetBuilder {
     }
 
     private Way createWay(List<LngLatAlt> coordinates) {
-        if (coordinates.size() == 0) {
+        if (coordinates.isEmpty()) {
             return null;
         }
         final Way way = new Way();
