@@ -14,10 +14,10 @@ group = 'org.openstreetmap.josm.plugins'
 version = '0.0.2-SNAPSHOT'
 
 // Change JOSM version (if needed) before you build
-project.ext.josm_version='10422'
+project.ext.josm_version='10580'
 project.ext.josm_location='download'
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
 
 repositories {
     mavenCentral()
@@ -63,8 +63,8 @@ jar
         "Plugin-Description": "Allows you to view a GeoJSON file as a layer.",
         "Plugin-Icon": "images/preferences/geojson.png",
         "Plugin-Link": "http://wiki.openstreetmap.org/index.php/JOSM/Plugins/GeoJSON",
-        "Plugin-Mainversion": "10407",
-        "Plugin-Version": "31246",
+        "Plugin-Mainversion": "10580",
+        "Plugin-Version": "31247",
         "Plugin-Canloadatruntime": "true",
         "Plugin-Requires": "opendata",
         )
