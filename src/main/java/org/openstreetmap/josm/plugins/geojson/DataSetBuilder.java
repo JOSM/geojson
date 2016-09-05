@@ -201,7 +201,9 @@ public class DataSetBuilder {
         }
         if (coordinates.size() == 1) {
             // create simple way
-            createWay(coordinates.get(0));
+            final Way way = createWay(coordinates.get(0));
+
+            fillTagsFromFeature(feature, way);
 
         } else if (coordinates.size() > 1) {
             // create multipolygon
