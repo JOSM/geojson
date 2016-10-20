@@ -44,7 +44,8 @@ public class GeoJsonFileImporter extends FileImporter {
             Layer layer = new GeoJsonLayer(tr("Data Layer from GeoJSON: ") + file.getName(), data);
             Main.getLayerManager().addLayer(layer);
         } catch (final Exception e) {
-            Main.error("Error while reading json file!", e);
+            Main.error("Error while reading json file!");
+            Main.error(e);
             JOptionPane.showMessageDialog(null, tr("Error loading geojson file {0}", file.getAbsolutePath()), tr("Error"), JOptionPane.WARNING_MESSAGE);
         } finally {
             progressMonitor.finishTask();
