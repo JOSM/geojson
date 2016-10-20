@@ -10,7 +10,6 @@ import org.opengis.referencing.crs.CRSFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.*;
@@ -69,8 +68,7 @@ public class DataSetBuilder {
                     CoordinateReferenceSystem osmCrs = CRS.decode("EPSG:4326");
                     transform = CRS.findMathTransform(crs, osmCrs);
                 } catch (FactoryException e) {
-                    Main.error("Unknown CRS " + crsName, e);
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Unknown CRS " + crsName, e);
                 }
             } else if (data.getCrs().getType() == CrsType.link) {
                 String link = data.getCrs().getProperties().get("href").toString();
