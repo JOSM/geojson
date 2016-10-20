@@ -7,10 +7,11 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.ExtensionFileFilter;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.io.FileImporter;
 import org.openstreetmap.josm.plugins.geojson.DataSetBuilder.BoundedDataSet;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.io.File;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
@@ -46,7 +47,8 @@ public class GeoJsonFileImporter extends FileImporter {
         } catch (final Exception e) {
             Main.error("Error while reading json file!");
             Main.error(e);
-            JOptionPane.showMessageDialog(null, tr("Error loading geojson file {0}", file.getAbsolutePath()), tr("Error"), JOptionPane.WARNING_MESSAGE);
+            GuiHelper.runInEDT(() -> JOptionPane.showMessageDialog(
+                    null, tr("Error loading geojson file {0}", file.getAbsolutePath()), tr("Error"), JOptionPane.WARNING_MESSAGE));
         } finally {
             progressMonitor.finishTask();
         }
