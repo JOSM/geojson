@@ -63,6 +63,10 @@ public class DataSetBuilder {
             if (data.getCrs().getType() == CrsType.name) {
 
                 String crsName = data.getCrs().getProperties().get("name").toString();
+                if ("urn:ogc:def:crs:OGC:1.3:CRS84".equals(crsName)) {
+                    // https://osgeo-org.atlassian.net/browse/GEOT-1710
+                    crsName = "EPSG:4326";
+                }
                 try {
                     CoordinateReferenceSystem crs = CRS.decode(crsName, true);
                     CoordinateReferenceSystem osmCrs = CRS.decode("EPSG:4326");
