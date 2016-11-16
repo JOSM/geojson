@@ -13,6 +13,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.*;
+import org.openstreetmap.josm.tools.HttpClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -82,7 +83,7 @@ public class DataSetBuilder {
                 }
                 try {
                     URL url = new URL(link);
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+                    try (BufferedReader reader = HttpClient.create(url).connect().getContentReader()) {
                         String inputLine;
                         StringBuilder content = new StringBuilder();
                         while ((inputLine = reader.readLine()) != null) {
