@@ -269,7 +269,7 @@ public class DataSetBuilder {
         final Map<String, Object> properties = feature.getProperties();
         final Map<String, String> tags = new TreeMap<>();
         for (final Entry<String, Object> entry : properties.entrySet()) {
-            tags.put(entry.getKey(), entry.getValue().toString());
+            tags.put(entry.getKey(), String.valueOf(entry.getValue()));
         }
         return tags;
     }
