@@ -12,7 +12,6 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.SelectionChangedListener;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
@@ -20,6 +19,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
@@ -111,8 +111,8 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
                     JList<?> selectionModel = (JList<?>) listSelectionEvent.getSource();
                     final int selectedIndex = selectionModel.getMinSelectionIndex();
                     final PrimitiveId identifier = indexToIdentifier.get(selectedIndex);
-                    layer.getData().setSelected(identifier);
-                    zoomTo(layer.getData().getPrimitiveById(identifier));
+                    layer.data.setSelected(identifier);
+                    zoomTo(layer.data.getPrimitiveById(identifier));
                 } finally {
                     stopProcessingCallbacks = false;
                 }
@@ -147,12 +147,12 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
         indexToIdentifier.clear();
         identifierToIndex.clear();
 
-        if (layer != null && layer.getData() != null && !layer.getData().allPrimitives().isEmpty())
+        if (layer != null && layer.data != null && !layer.data.allPrimitives().isEmpty())
         {
             int index = 0;
 
             // Build the maps and add the primitives to the list's model
-            for (final OsmPrimitive osmPrimitive : layer.getData().allPrimitives())
+            for (final OsmPrimitive osmPrimitive : layer.data.allPrimitives())
             {
                 if (osmPrimitive instanceof Node && osmPrimitive.getKeys().isEmpty()) { // skip points without tags
                         continue;
@@ -167,18 +167,16 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
 
     @Override
     public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
-        if (Main.getLayerManager().getActiveLayer() instanceof GeoJsonLayer) {
-            this.layer = (GeoJsonLayer) Main.getLayerManager().getActiveLayer();
+        if (MainApplication.getLayerManager().getActiveLayer() instanceof GeoJsonLayer) {
+            this.layer = (GeoJsonLayer) MainApplication.getLayerManager().getActiveLayer();
             showDataFromLayer();
         }
     }
 
     @Override
-    public void layerAdded(LayerAddEvent e)
-    {
-        if (e.getAddedLayer() == this.layer)
-        {
-            Main.map.mapView.moveLayer(e.getAddedLayer(), 0);
+    public void layerAdded(LayerAddEvent e) {
+        if (e.getAddedLayer() == this.layer) {
+            MainApplication.getMap().mapView.moveLayer(e.getAddedLayer(), 0);
         }
     }
 
@@ -198,18 +196,16 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
      * @param primitive
      *            The primitive to zoom to
      */
-    private void zoomTo(final OsmPrimitive primitive)
-    {
+    private void zoomTo(final OsmPrimitive primitive) {
         if (primitive == null) {
             return;
         }
-        if (primitive instanceof Node)
-        {
-            Main.map.mapView.zoomTo(((Node) primitive).getCoor());
+        if (primitive instanceof Node) {
+            MainApplication.getMap().mapView.zoomTo(((Node) primitive).getCoor());
             return;
         }
         final BoundingXYVisitor v = new BoundingXYVisitor();
         v.visit((Way) primitive);
-        Main.map.mapView.zoomTo(v.getBounds());
+        MainApplication.getMap().mapView.zoomTo(v.getBounds());
     }
 }

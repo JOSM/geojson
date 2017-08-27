@@ -1,20 +1,23 @@
 package org.openstreetmap.josm.plugins.geojson;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.openstreetmap.josm.tools.I18n.tr;
+
+import java.io.File;
+
+import javax.swing.JOptionPane;
+
 import org.geojson.GeoJsonObject;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.ExtensionFileFilter;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.io.importexport.FileImporter;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.plugins.geojson.DataSetBuilder.BoundedDataSet;
+import org.openstreetmap.josm.tools.Logging;
 
-import javax.swing.JOptionPane;
-import java.io.File;
-
-import static org.openstreetmap.josm.tools.I18n.tr;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Ian Dees <ian.dees@gmail.com>
@@ -32,7 +35,7 @@ public class GeoJsonFileImporter extends FileImporter {
 
         progressMonitor.beginTask(tr("Loading json file..."));
         progressMonitor.setTicksCount(2);
-        Main.info("Parsing GeoJSON: " + file.getAbsolutePath());
+        Logging.info("Parsing GeoJSON: " + file.getAbsolutePath());
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -43,10 +46,10 @@ public class GeoJsonFileImporter extends FileImporter {
             final BoundedDataSet data = new DataSetBuilder().build(object);
 
             Layer layer = new GeoJsonLayer(tr("Data Layer from GeoJSON: ") + file.getName(), data);
-            Main.getLayerManager().addLayer(layer);
+            MainApplication.getLayerManager().addLayer(layer);
         } catch (final Exception e) {
-            Main.error("Error while reading json file!");
-            Main.error(e);
+        	Logging.error("Error while reading json file!");
+        	Logging.error(e);
             GuiHelper.runInEDT(() -> JOptionPane.showMessageDialog(
                     null, tr("Error loading geojson file {0}", file.getAbsolutePath()), tr("Error"), JOptionPane.WARNING_MESSAGE));
         } finally {

@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.geojson;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.ExtensionFileFilter;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
@@ -31,8 +31,8 @@ public class GeoJsonPlugin extends Plugin
         {
             final GeoJsonDialog dialog = new GeoJsonDialog();
             newFrame.addToggleDialog(dialog);
-            Main.getLayerManager().addLayerChangeListener(dialog);
-            Main.getLayerManager().addActiveLayerChangeListener(dialog);
+            MainApplication.getLayerManager().addLayerChangeListener(dialog);
+            MainApplication.getLayerManager().addActiveLayerChangeListener(dialog);
         }
     }
 }

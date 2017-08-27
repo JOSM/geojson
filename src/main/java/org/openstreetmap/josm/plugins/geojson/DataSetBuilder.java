@@ -1,6 +1,25 @@
 package org.openstreetmap.josm.plugins.geojson;
 
-import org.geojson.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+
+import org.geojson.Feature;
+import org.geojson.FeatureCollection;
+import org.geojson.GeoJsonObject;
+import org.geojson.GeometryCollection;
+import org.geojson.LineString;
+import org.geojson.LngLatAlt;
+import org.geojson.MultiLineString;
+import org.geojson.MultiPoint;
+import org.geojson.MultiPolygon;
+import org.geojson.Point;
+import org.geojson.Polygon;
 import org.geojson.jackson.CrsType;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
@@ -12,18 +31,13 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.data.osm.*;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.data.osm.Relation;
+import org.openstreetmap.josm.data.osm.RelationMember;
+import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.tools.HttpClient;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 
 /**
  * @author matthieun
