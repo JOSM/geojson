@@ -2,42 +2,37 @@
 
 A plugin for displaying geodata stored in a [geojson](https://geojson.org/) format as a layer in JOSM.
 
-## Status
-
-<!-- [![Build Status](https://travis-ci.org/matthieun/josm-geojson.svg?branch=master)](https://travis-ci.org/matthieun/josm-geojson) -->
+<!-- [![Travis CI build status](https://img.shields.io/travis/JOSM/geojson/master.svg?style=flat-square)](https://travis-ci.org/JOSM/geojson) -->
 
 ## Build
 
-Create a lib folder
-```
-mkdir lib/
-```
-Download josm and dependent plugins
-```
-gradle dependencies
-```
-Build
-```
-gradle clean build
+You need to have Java 8 or later installed.
+
+Then run
+```bash
+  ./gradlew build
 ```
 
 ## Run
 
-Depending on the JOSM version used...
-
-Before:
-
+Run
+```bash
+  ./gradlew runJosm
 ```
-cp build/libs/josm-geojson-0.0.0-SNAPSHOT.jar ~/.josm/plugins/geojson.jar
-```
+You do not need to build first, Gradle will check if you already built the current state of the source code and if not, it will build it for you on the fly.
 
-After:
-```
-cp build/libs/josm-geojson-0.0.0-SNAPSHOT.jar ~/Library/JOSM/plugins/geojson.jar
-```
-
-And Josm should pick up the plugin at startup.
-
-To Activate it, Josm Preferences > Plugins > Search geojson > Click the check box > Ok.
+You also do not need to have JOSM installed. The version of JOSM that is firing up is independent of any installed JOSM versions and uses a different `JOSM_HOME` directory than other JOSM installations.
 
 To open a `*.json` or `*.geojson` file, File > Open, select the file, and to make the list appear, click Windows > Geojson
+
+## Before developing in Eclipse
+
+Run
+```bash
+  ./gradlew eclipse
+```
+
+Then import the project as "Already existing project" and all should be set up.
+
+
+Have fun :+1: :tada:

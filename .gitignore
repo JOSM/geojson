@@ -1,10 +1,7 @@
-build
-.settings
-.project
-.classpath
-.DS_Store
 /build/
-/gradle/
-.gradle
+/.settings/
+/.project
+/.classpath
+.DS_Store
+/.gradle/
 /bin/
-/lib/
