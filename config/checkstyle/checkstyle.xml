@@ -5,7 +5,14 @@
 
 <module name="Checker">
 	<module name="NewlineAtEndOfFile" />
+	<property name="charset" value="UTF-8"/>
+	<module name="Header">
+		<property name="header" value="// License: GPL. For details, see LICENSE file."/>
+		<property name="fileExtensions" value=".java"/>
+	</module>
+	<module name="FileTabCharacter"/>
 	<module name="TreeWalker">
+		<module name="WhitespaceAfter"/>
 		<module name="JavadocMethod">
 			<property name="scope" value="protected" />
 			<property name="excludeScope" value="private" />
@@ -36,11 +43,11 @@
 		<module name="RedundantModifier" />
 		<module name="AvoidNestedBlocks" />
 		<module name="LeftCurly">
-			<property name="option" value="nl" />
+			<property name="option" value="nlow" />
 		</module>
 		<module name="NeedBraces" />
 		<module name="RightCurly">
-			<property name="option" value="alone" />
+			<property name="option" value="same" />
 		</module>
 		<module name="EmptyStatement" />
 		<module name="EqualsHashCode" />
