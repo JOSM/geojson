@@ -3,16 +3,8 @@
 
     <!-- enter the SVN commit message -->
     <property name="commit.message" value=""/>
-    <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
-    <property name="plugin.main.version" value="12671"/>
-
-    <property name="plugin.author" value="Ian Dees, matthieun, Larry0ua"/>
-    <property name="plugin.class" value="org.openstreetmap.josm.plugins.geojson.GeoJsonPlugin"/>
-    <property name="plugin.description" value="Allows you to view a GeoJSON file as a layer."/>
-    <property name="plugin.icon" value="images/preferences/geojson.png"/>
-    <property name="plugin.link" value="http://wiki.openstreetmap.org/index.php/JOSM/Plugins/GeoJSON"/>
-	<property name="plugin.canloadatruntime" value="true"/>
-    <property name="plugin.requires" value="geotools"/>
+    <!-- edit the properties of this plugin in the file `gradle.properties` -->
+    <property file="${basedir}/gradle.properties"/>
 
     <!-- ** include targets that all plugins have in common ** -->
     <import file="../build-common.xml"/>

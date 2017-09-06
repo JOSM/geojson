@@ -1,3 +1,21 @@
+/**
+ * Execute this task whenever you change the dependencies in the configuration `packIntoJar`.
+ */
+task updateLibDir(type: Sync) {
+  from configurations.packIntoJar
+  into "$projectDir/lib/"
+  doLast {
+    try {
+      exec {
+        workingDir "$projectDir"
+        commandLine 'git', 'stage', 'lib/'
+      }
+    } catch (Exception e) {
+      logging.warn("Tried to stage the updated library JARs for you, but failed. You should do this now manually.")
+    }
+  }
+}
+
 project.ext.versions = [
     junit: '4.8.2',
     geojsonjackson: '1.5.1',

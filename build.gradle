@@ -1,84 +1,57 @@
 plugins {
-  id "de.undercouch.download" version "2.0.0"
+  id 'org.openstreetmap.josm.gradle.plugin' version '0.1.6'
+  id 'com.github.ben-manes.versions' version '0.15.0'
 }
 
 apply from: 'dependencies.gradle'
+apply plugin: 'eclipse'
 apply plugin: 'java'
-//apply plugin: 'checkstyle'
+apply from: 'gradle/version-functions.gradle'
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
 
-//checkstyle {
-//    toolVersion = "6.0"
-//}
+checkstyle {
+    toolVersion = "8.2"
+    ignoreFailures = true
+}
 
 group = 'org.openstreetmap.josm.plugins'
-version = '0.0.2-SNAPSHOT'
+version = getVersionName()
 
-// Change JOSM version (if needed) before you build
-project.ext.josm_version='10580'
-project.ext.josm_location='download'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
 repositories {
     mavenCentral()
-    flatDir(dirs: file('lib/'))
 }
 
-configurations {
-    provided
-}
-sourceSets.main.compileClasspath += configurations.provided
-dependencies
-{
-    // Josm and required plugins are not on Maven Central
-    provided ':josm@jar'
-    provided ':geotools@jar'
-    provided ':opendata@jar'
-    compile packages.geojsonjackson
-    compile packages.jackson.core
-    compile packages.jackson.databind
-    compile packages.jackson.annotations
+dependencies {
+    // Transitively required JOSM plugins
+    requiredPlugin 'org.openstreetmap.josm.plugins:utilsplugin2:'
+    requiredPlugin 'org.openstreetmap.josm.plugins:apache-commons:'
+    requiredPlugin 'org.openstreetmap.josm.plugins:ejml:'
+    requiredPlugin 'org.openstreetmap.josm.plugins:jts:'
+
+    // Whenever you change the dependencies of the configuration `packIntoJar`, run `./gradlew updateLibDir` once.
+    packIntoJar packages.geojsonjackson
+    packIntoJar packages.jackson.core
+    packIntoJar packages.jackson.databind
+    packIntoJar packages.jackson.annotations
 
     testCompile packages.junit
 }
 
-jar
-{
-    from{
-        configurations.compile.collect
-        {
-            it.isDirectory() ? it : zipTree(it).matching{
-                exclude
-                {
-                    it.path.contains('META-INF') && (it.path.endsWith('.SF') || it.path.endsWith('.DSA') || it.path.endsWith('.RSA'))
-                }
-            }
-        }
-    }
-    manifest
-    {
-        attributes("Author": "Ian Dees and matthieun",
-        "Plugin-Class": "org.openstreetmap.josm.plugins.geojson.GeoJsonPlugin",
-        "Plugin-Date": "2016-06-20T00:00:00.000000Z",
-        "Plugin-Description": "Allows you to view a GeoJSON file as a layer.",
-        "Plugin-Icon": "images/preferences/geojson.png",
-        "Plugin-Link": "http://wiki.openstreetmap.org/index.php/JOSM/Plugins/GeoJSON",
-        "Plugin-Mainversion": "10580",
-        "Plugin-Version": "31247",
-        "Plugin-Canloadatruntime": "true",
-        "Plugin-Requires": "opendata",
-        )
-    }
+// See https://discuss.gradle.org/t/how-to-add-a-single-extra-resource-to-the-existing-resources/17070/2
+processResources {
+  from "LICENSE"
+  from "README.md"
 }
 
-import de.undercouch.gradle.tasks.download.Download
-
-task josm(type: Download) {
-    src 'http://josm.openstreetmap.de/' + josm_location + '/josm-snapshot-' + josm_version + '.jar'
-    dest 'lib/josm.jar'
+jar {
+  exclude 'META-INF/**/*'
 }
-task dependencies(type:Download, dependsOn: 'josm') {
-    src (['http://svn.openstreetmap.org/applications/editors/josm/dist/opendata.jar',
-            'http://svn.openstreetmap.org/applications/editors/josm/dist/geotools.jar'])
-    dest 'lib/'
+
+josm {
+  jarName = "geojson.jar"
+  josmCompileVersion = 12681
 }
