@@ -1,6 +1,10 @@
 language: java
 jdk:
-  - oraclejdk8
-install:
-  - chmod ug+x install-josm.sh
-  - ./install-josm.sh
+- openjdk8
+- oraclejdk8
+- oraclejdk9
+script: ./gradlew build minJosmVersionClasses
+matrix:
+  fast_finish: true
+  allow_failures:
+  - jdk: oraclejdk9
