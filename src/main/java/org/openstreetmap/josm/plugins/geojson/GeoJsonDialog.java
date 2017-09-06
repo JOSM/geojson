@@ -88,7 +88,7 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
      */
     public GeoJsonDialog() {
 
-        super("GeoJson object list", "activate.png", "Opens the GeoJson object list pane", null, 150);
+        super("GeoJson object list", "activate-geojson", "Opens the GeoJson object list pane", null, 150);
         this.panel = new JPanel(new BorderLayout());
         this.panel.setName("GeoJson object list");
         add(this.panel, BorderLayout.CENTER);
@@ -184,7 +184,7 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
     public void layerRemoving(LayerRemoveEvent e)
     {
     }
-    
+
     @Override
     public void layerOrderChanged(LayerOrderChangeEvent e)
     {
