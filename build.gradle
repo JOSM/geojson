@@ -41,6 +41,16 @@ dependencies {
     testCompile packages.junit
 }
 
+// See https://discuss.gradle.org/t/how-to-add-a-single-extra-resource-to-the-existing-resources/17070/2
+processResources {
+  from "LICENSE"
+  from "README.md"
+}
+
+jar {
+  exclude 'META-INF/**/*'
+}
+
 josm {
   jarName = "geojson.jar"
   josmCompileVersion = 12681
