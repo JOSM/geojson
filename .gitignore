@@ -5,3 +5,5 @@
 .DS_Store
 /.gradle/
 /bin/
+.idea/
+JOSM-geojson.iml

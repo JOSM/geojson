@@ -3,14 +3,6 @@
   <!-- This set of preferences is used by JOSM when launched from `gradlew runJosm`. -->
   <list key='plugins'>
     <entry value='geojson'/>
-    <!-- Required plugins -->
-    <entry value='geotools'/>
-    <entry value='opendata'/>
-    <!-- Transitive plugin requirements -->
-    <entry value='apache-commons'/>
-    <entry value='ejml'/>
-    <entry value='jts'/>
-    <entry value='utilsplugin2'/>
   </list>
   <tag key='pluginmanager.time-based-update.policy' value='never'/>
   <tag key='pluginmanager.version-based-update.policy' value='never'/>
