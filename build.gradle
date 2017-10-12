@@ -26,12 +26,6 @@ repositories {
 }
 
 dependencies {
-    // Transitively required JOSM plugins
-    requiredPlugin 'org.openstreetmap.josm.plugins:utilsplugin2:'
-    requiredPlugin 'org.openstreetmap.josm.plugins:apache-commons:'
-    requiredPlugin 'org.openstreetmap.josm.plugins:ejml:'
-    requiredPlugin 'org.openstreetmap.josm.plugins:jts:'
-
     // Whenever you change the dependencies of the configuration `packIntoJar`, run `./gradlew updateLibDir` once.
     packIntoJar packages.geojsonjackson
     packIntoJar packages.jackson.core
@@ -53,5 +47,5 @@ jar {
 
 josm {
   jarName = "geojson.jar"
-  josmCompileVersion = 12681
+  josmCompileVersion = 12712
 }

@@ -1,8 +1,5 @@
 package org.openstreetmap.josm.plugins.geojson;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,15 +17,6 @@ import org.geojson.MultiPoint;
 import org.geojson.MultiPolygon;
 import org.geojson.Point;
 import org.geojson.Polygon;
-import org.geojson.jackson.CrsType;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.ReferencingFactoryFinder;
-import org.geotools.referencing.operation.transform.IdentityTransform;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CRSFactory;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.DataSet;
@@ -37,7 +25,6 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.tools.HttpClient;
 
 /**
  * @author matthieun
@@ -67,57 +54,10 @@ public class DataSetBuilder {
         }
     }
 
-    private MathTransform transform;
     private DataSet dataSet;
 
     public BoundedDataSet build(final GeoJsonObject data) {
-        transform = IdentityTransform.create(2);
         dataSet = new DataSet();
-
-        if (data.getCrs() != null && data.getCrs().getProperties() != null) {
-            if (data.getCrs().getType() == CrsType.name) {
-
-                String crsName = data.getCrs().getProperties().get("name").toString();
-                if ("urn:ogc:def:crs:OGC:1.3:CRS84".equals(crsName)) {
-                    // https://osgeo-org.atlassian.net/browse/GEOT-1710
-                    crsName = "EPSG:4326";
-                }
-                try {
-                    CoordinateReferenceSystem crs = CRS.decode(crsName, true);
-                    CoordinateReferenceSystem osmCrs = CRS.decode("EPSG:4326");
-                    transform = CRS.findMathTransform(crs, osmCrs);
-                } catch (FactoryException e) {
-                    throw new UnsupportedOperationException("Unknown CRS " + crsName, e);
-                }
-            } else if (data.getCrs().getType() == CrsType.link) {
-                String link = data.getCrs().getProperties().get("href").toString();
-                String type = data.getCrs().getProperties().get("type").toString();
-                if (type.contains("proj4")) {
-                    throw new UnsupportedOperationException("Given type of linked CRS is not supported: " + type);
-                }
-                try {
-                    URL url = new URL(link);
-                    try (BufferedReader reader = HttpClient.create(url).connect().getContentReader()) {
-                        String inputLine;
-                        StringBuilder content = new StringBuilder();
-                        while ((inputLine = reader.readLine()) != null) {
-                            content.append(inputLine);
-                            if (inputLine.length() > MAX_LINK_LENGTH) {
-                                throw new UnsupportedOperationException("Linked CRS is too long! " + link);
-                            }
-                        }
-                        CRSFactory crsFactory = ReferencingFactoryFinder.getCRSFactory(null);
-                        CoordinateReferenceSystem crs = crsFactory.createFromWKT(content.toString());
-                        CoordinateReferenceSystem osmCrs = CRS.decode("EPSG:4326");
-                        transform = CRS.findMathTransform(crs, osmCrs);
-                    }
-                } catch (IOException e) {
-                    throw new UnsupportedOperationException("Problems with parsing URL or loading the data: " + link + ", " + e.getMessage(), e);
-                } catch (FactoryException e) {
-                    throw new UnsupportedOperationException("Factory exception while creating linked CRS: " + e.getMessage(), e);
-                }
-            }
-        }
 
         if (data instanceof FeatureCollection) {
             processFeatureCollection((FeatureCollection) data);
@@ -246,11 +186,6 @@ public class DataSetBuilder {
 
     private Node createNode(LngLatAlt point) {
         double[] pt = new double[] {point.getLongitude(), point.getLatitude()};
-        try {
-            transform.transform(pt, 0, pt, 0, 1);
-        } catch (TransformException e) {
-            throw new UnsupportedOperationException("Cannot transform a point from the input dataset to the EPSG:4326", e);
-        }
         final LatLon latlon = new LatLon(pt[1], pt[0]);
         Node node = new Node(latlon);
 
