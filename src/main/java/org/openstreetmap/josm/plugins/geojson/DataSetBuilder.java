@@ -1,3 +1,4 @@
+// License: GPL. For details, see LICENSE file.
 package org.openstreetmap.josm.plugins.geojson;
 
 import java.util.ArrayList;
@@ -76,29 +77,29 @@ public class DataSetBuilder {
         return new BoundedDataSet(dataSet, bounds);
     }
 
-    private void processFeatureCollection(FeatureCollection data) {
+    private void processFeatureCollection(final FeatureCollection data) {
         for (final Feature feature : data) {
             processFeature(feature);
         }
     }
 
-    private void processGeometryCollection(Feature feature, GeometryCollection geometryCollection) {
+    private void processGeometryCollection(final Feature feature, final GeometryCollection geometryCollection) {
         for (GeoJsonObject geometry : geometryCollection) {
             processGeometry(feature, geometry);
         }
     }
 
-    private void processFeature(Feature feature) {
+    private void processFeature(final Feature feature) {
         processGeometry(feature, feature.getGeometry());
     }
 
-    private void processMultiPoint(Feature feature, MultiPoint multiPoint) {
+    private void processMultiPoint(final Feature feature, final MultiPoint multiPoint) {
         for (LngLatAlt point : multiPoint.getCoordinates()) {
             processPoint(feature, point);
         }
     }
 
-    private void processGeometry(Feature feature, GeoJsonObject geometry) {
+    private void processGeometry(final Feature feature, final GeoJsonObject geometry) {
         if (geometry instanceof Feature) {
             processGeometry((Feature) geometry, ((Feature) geometry).getGeometry());
         } else {
@@ -120,25 +121,25 @@ public class DataSetBuilder {
         }
     }
 
-    private void processMultiPolygon(Feature feature, MultiPolygon geometry) {
+    private void processMultiPolygon(final Feature feature, final MultiPolygon geometry) {
         for (List<List<LngLatAlt>> polygon : geometry.getCoordinates()) {
             processPolygon(feature, polygon);
         }
     }
 
-    private void processMultiLineString(Feature feature, MultiLineString multiLineString) {
+    private void processMultiLineString(final Feature feature, final MultiLineString multiLineString) {
         for (List<LngLatAlt> coordinates : multiLineString.getCoordinates()) {
             processLineString(feature, coordinates);
         }
     }
 
-    private void processPoint(Feature feature, LngLatAlt geometry) {
+    private void processPoint(final Feature feature, final LngLatAlt geometry) {
         final Node node = createNode(geometry);
 
         fillTagsFromFeature(feature, node);
     }
 
-    private void processLineString(Feature feature, List<LngLatAlt> coordinates) {
+    private void processLineString(final Feature feature, final List<LngLatAlt> coordinates) {
         if (coordinates.isEmpty()) {
             return;
         }
@@ -147,7 +148,7 @@ public class DataSetBuilder {
         fillTagsFromFeature(feature, way);
     }
 
-    private void processPolygon(Feature feature, List<List<LngLatAlt>> coordinates) {
+    private void processPolygon(final Feature feature, final List<List<LngLatAlt>> coordinates) {
         if (coordinates.isEmpty()) {
             return;
         }
@@ -178,23 +179,23 @@ public class DataSetBuilder {
         }
     }
 
-    private void fillTagsFromFeature(Feature feature, OsmPrimitive primitive) {
+    private void fillTagsFromFeature(final Feature feature, final OsmPrimitive primitive) {
         if (feature != null) {
             primitive.setKeys(getTags(feature));
         }
     }
 
-    private Node createNode(LngLatAlt point) {
-        double[] pt = new double[] {point.getLongitude(), point.getLatitude()};
+    private Node createNode(final LngLatAlt point) {
+        final double[] pt = new double[] {point.getLongitude(), point.getLatitude()};
         final LatLon latlon = new LatLon(pt[1], pt[0]);
-        Node node = new Node(latlon);
+        final Node node = new Node(latlon);
 
         dataSet.addPrimitive(node);
 
         return node;
     }
 
-    private Way createWay(List<LngLatAlt> coordinates) {
+    private Way createWay(final List<LngLatAlt> coordinates) {
         if (coordinates.isEmpty()) {
             return null;
         }
@@ -223,14 +224,14 @@ public class DataSetBuilder {
         return tags;
     }
 
-    private Bounds mergeBounds(Bounds bounds, OsmPrimitive osmPrimitive) {
+    private Bounds mergeBounds(final Bounds bounds, final OsmPrimitive osmPrimitive) {
         if (osmPrimitive instanceof Node) { // ways and relations consist of nodes that are already in the dataset
-            bounds = mergeBounds(bounds, ((Node)osmPrimitive).getCoor());
+            return mergeBounds(bounds, ((Node) osmPrimitive).getCoor());
         }
         return bounds;
     }
 
-    private Bounds mergeBounds(Bounds bounds, LatLon coords) {
+    private Bounds mergeBounds(final Bounds bounds, final LatLon coords) {
         if (bounds == null) {
             return new Bounds(coords);
         } else {

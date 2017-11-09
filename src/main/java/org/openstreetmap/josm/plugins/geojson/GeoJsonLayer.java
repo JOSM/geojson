@@ -1,3 +1,4 @@
+// License: GPL. For details, see LICENSE file.
 package org.openstreetmap.josm.plugins.geojson;
 
 import javax.swing.Icon;
@@ -14,36 +15,30 @@ import org.openstreetmap.josm.tools.ImageProvider;
  * @author Ian Dees <ian.dees@gmail.com>
  * @author matthieun <https://github.com/matthieun>
  */
-public class GeoJsonLayer extends OsmDataLayer
-{
+public class GeoJsonLayer extends OsmDataLayer {
     private final Bounds bounds;
 
-    public GeoJsonLayer(final String name, final BoundedDataSet data)
-    {
+    public GeoJsonLayer(final String name, final BoundedDataSet data) {
         super(data.getDataSet(), name, null);
         this.bounds = data.getBounds();
     }
 
-    public Bounds getBounds()
-    {
+    public Bounds getBounds() {
         return this.bounds;
     }
 
     @Override
-    public Icon getIcon()
-    {
+    public Icon getIcon() {
         return ImageProvider.get("data", "way");
     }
 
     @Override
-    public String getToolTipText()
-    {
+    public String getToolTipText() {
         return "GeoJSON";
     }
 
     @Override
-    public void visitBoundingBox(final BoundingXYVisitor v)
-    {
+    public void visitBoundingBox(final BoundingXYVisitor v) {
         v.visit(this.bounds);
     }
 }
