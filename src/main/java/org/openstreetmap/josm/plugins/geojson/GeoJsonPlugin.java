@@ -1,4 +1,4 @@
-// License: GPL. For details, see LICENSE file.
+// License: Apache 2.0. For details, see LICENSE file.
 package org.openstreetmap.josm.plugins.geojson;
 
 import org.openstreetmap.josm.actions.ExtensionFileFilter;
