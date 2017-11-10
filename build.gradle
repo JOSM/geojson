@@ -1,6 +1,6 @@
 plugins {
-  id 'org.openstreetmap.josm.gradle.plugin' version '0.1.6'
-  id 'com.github.ben-manes.versions' version '0.15.0'
+  id 'org.openstreetmap.josm.gradle.plugin' version '0.1.10'
+  id 'com.github.ben-manes.versions' version '0.17.0'
 }
 
 apply from: 'dependencies.gradle'
@@ -11,7 +11,7 @@ apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
 
 checkstyle {
-    toolVersion = "8.2"
+    toolVersion = "8.4"
     ignoreFailures = true
 }
 
@@ -32,7 +32,7 @@ dependencies {
     packIntoJar packages.jackson.databind
     packIntoJar packages.jackson.annotations
 
-    testCompile packages.junit
+    testImplementation packages.junit
 }
 
 // See https://discuss.gradle.org/t/how-to-add-a-single-extra-resource-to-the-existing-resources/17070/2
@@ -45,7 +45,7 @@ jar {
   exclude 'META-INF/**/*'
 }
 
+archivesBaseName="geojson"
 josm {
-  jarName = "geojson.jar"
-  josmCompileVersion = 12712
+  josmCompileVersion = 13053
 }

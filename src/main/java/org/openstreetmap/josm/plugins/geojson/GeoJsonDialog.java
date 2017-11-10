@@ -1,3 +1,4 @@
+// License: GPL. For details, see LICENSE file.
 package org.openstreetmap.josm.plugins.geojson;
 
 import java.awt.BorderLayout;
@@ -39,30 +40,25 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
      *
      * @author matthieun
      */
-    public static class PrintablePrimitive
-    {
+    public static class PrintablePrimitive {
 
         private final OsmPrimitive osmPrimitive;
 
         private final long index;
-        public PrintablePrimitive(final long index, final OsmPrimitive osmPrimitive)
-        {
+        public PrintablePrimitive(final long index, final OsmPrimitive osmPrimitive) {
             this.osmPrimitive = osmPrimitive;
             this.index = index;
         }
-        public long getIndex()
-        {
+        public long getIndex() {
             return this.index;
         }
 
-        public OsmPrimitive getOsmPrimitive()
-        {
+        public OsmPrimitive getOsmPrimitive() {
             return this.osmPrimitive;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             final StringBuilder result = new StringBuilder();
             result.append("Index: ");
             result.append(this.index);
@@ -108,7 +104,7 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
                 }
                 try {
                     stopProcessingCallbacks = true;
-                    JList<?> selectionModel = (JList<?>) listSelectionEvent.getSource();
+                    final JList<?> selectionModel = (JList<?>) listSelectionEvent.getSource();
                     final int selectedIndex = selectionModel.getMinSelectionIndex();
                     final PrimitiveId identifier = indexToIdentifier.get(selectedIndex);
                     layer.data.setSelected(identifier);
@@ -147,13 +143,11 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
         indexToIdentifier.clear();
         identifierToIndex.clear();
 
-        if (layer != null && layer.data != null && !layer.data.allPrimitives().isEmpty())
-        {
+        if (layer != null && layer.data != null && !layer.data.allPrimitives().isEmpty()) {
             int index = 0;
 
             // Build the maps and add the primitives to the list's model
-            for (final OsmPrimitive osmPrimitive : layer.data.allPrimitives())
-            {
+            for (final OsmPrimitive osmPrimitive : layer.data.allPrimitives()) {
                 if (osmPrimitive instanceof Node && osmPrimitive.getKeys().isEmpty()) { // skip points without tags
                         continue;
                 }
@@ -166,7 +160,7 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
     }
 
     @Override
-    public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
+    public void activeOrEditLayerChanged(final ActiveLayerChangeEvent e) {
         if (MainApplication.getLayerManager().getActiveLayer() instanceof GeoJsonLayer) {
             this.layer = (GeoJsonLayer) MainApplication.getLayerManager().getActiveLayer();
             showDataFromLayer();
@@ -174,20 +168,18 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
     }
 
     @Override
-    public void layerAdded(LayerAddEvent e) {
+    public void layerAdded(final LayerAddEvent e) {
         if (e.getAddedLayer() == this.layer) {
             MainApplication.getMap().mapView.moveLayer(e.getAddedLayer(), 0);
         }
     }
 
     @Override
-    public void layerRemoving(LayerRemoveEvent e)
-    {
+    public void layerRemoving(final LayerRemoveEvent e) {
     }
 
     @Override
-    public void layerOrderChanged(LayerOrderChangeEvent e)
-    {
+    public void layerOrderChanged(final LayerOrderChangeEvent e) {
     }
 
     /**

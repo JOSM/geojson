@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<preferences xmlns="http://josm.openstreetmap.de/preferences-1.0">
-  <!-- This set of preferences is used by JOSM when launched from `gradlew runJosm`. -->
-  <list key='plugins'>
-    <entry value='geojson'/>
-  </list>
-  <tag key='pluginmanager.time-based-update.policy' value='never'/>
-  <tag key='pluginmanager.version-based-update.policy' value='never'/>
-</preferences>

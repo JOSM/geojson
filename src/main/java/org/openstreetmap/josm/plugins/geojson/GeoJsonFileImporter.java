@@ -1,3 +1,4 @@
+// License: GPL. For details, see LICENSE file.
 package org.openstreetmap.josm.plugins.geojson;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
@@ -37,19 +38,19 @@ public class GeoJsonFileImporter extends FileImporter {
         progressMonitor.setTicksCount(2);
         Logging.info("Parsing GeoJSON: " + file.getAbsolutePath());
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            final ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            GeoJsonObject object = mapper.readValue(file, GeoJsonObject.class);
+            final GeoJsonObject object = mapper.readValue(file, GeoJsonObject.class);
 
             progressMonitor.worked(1);
 
             final BoundedDataSet data = new DataSetBuilder().build(object);
 
-            Layer layer = new GeoJsonLayer(tr("Data Layer from GeoJSON: ") + file.getName(), data);
+            final Layer layer = new GeoJsonLayer(tr("Data Layer from GeoJSON: ") + file.getName(), data);
             MainApplication.getLayerManager().addLayer(layer);
         } catch (final Exception e) {
-        	Logging.error("Error while reading json file!");
-        	Logging.error(e);
+            Logging.error("Error while reading json file!");
+            Logging.error(e);
             GuiHelper.runInEDT(() -> JOptionPane.showMessageDialog(
                     null, tr("Error loading geojson file {0}", file.getAbsolutePath()), tr("Error"), JOptionPane.WARNING_MESSAGE));
         } finally {

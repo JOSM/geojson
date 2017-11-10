@@ -2,7 +2,7 @@
 
 A plugin for displaying geodata stored in a [geojson](https://geojson.org/) format as a layer in JOSM.
 
-<!-- [![Travis CI build status](https://img.shields.io/travis/JOSM/geojson/master.svg?style=flat-square)](https://travis-ci.org/JOSM/geojson) -->
+[![Travis CI build status](https://img.shields.io/travis/JOSM/geojson/master.svg?style=flat-square)](https://travis-ci.org/JOSM/geojson)
 
 ## Build
 
