@@ -19,7 +19,7 @@ task updateLibDir(type: Sync) {
 project.ext.versions = [
     junit: '4.12',
     geojsonjackson: '1.8',
-    jackson: '2.9.2',
+    jackson: '2.9.3',
 ]
 
 project.ext.packages = [

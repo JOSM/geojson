@@ -1,5 +1,5 @@
 plugins {
-  id 'org.openstreetmap.josm.gradle.plugin' version '0.1.10'
+  id 'org.openstreetmap.josm' version '0.2.2'
   id 'com.github.ben-manes.versions' version '0.17.0'
 }
 
@@ -47,5 +47,5 @@ jar {
 
 archivesBaseName="geojson"
 josm {
-  josmCompileVersion = 13053
+  josmCompileVersion = 13170
 }
