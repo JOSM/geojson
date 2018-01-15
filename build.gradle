@@ -1,5 +1,5 @@
 plugins {
-  id 'org.openstreetmap.josm' version '0.2.2'
+  id 'org.openstreetmap.josm' version '0.3.1'
   id 'com.github.ben-manes.versions' version '0.17.0'
 }
 
