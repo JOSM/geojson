@@ -3,6 +3,8 @@ host = https://www.transifex.com
 
 [josm.josm-plugin_geojson]
 file_filter = src/main/po/<lang>.po
+lang_map = ca@valencia: ca-valencia
+minimum_perc=10
 source_file = build/i18n/josm-plugin_geojson.pot
 source_lang = en
 type = PO
