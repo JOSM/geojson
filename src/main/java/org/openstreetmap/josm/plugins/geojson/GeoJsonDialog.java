@@ -2,7 +2,6 @@
 package org.openstreetmap.josm.plugins.geojson;
 
 import java.awt.BorderLayout;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +12,12 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.openstreetmap.josm.data.SelectionChangedListener;
-import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.DataSelectionListener;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.data.osm.event.SelectionEventManager;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
@@ -115,15 +114,15 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
             }
         });
         // The listener for clicks on the map
-        DataSet.addSelectionListener(new SelectionChangedListener() {
+        SelectionEventManager.getInstance().addSelectionListener(new DataSelectionListener() {
             @Override
-            public void selectionChanged(final Collection<? extends OsmPrimitive> selection) {
+            public void selectionChanged(SelectionChangeEvent event) {
                 if (stopProcessingCallbacks) {
                     return;
                 }
                 try {
                     stopProcessingCallbacks = true;
-                    for (final OsmPrimitive feature : selection) {
+                    for (final OsmPrimitive feature : event.getSelection()) {
                         if (identifierToIndex.containsKey(feature.getPrimitiveId())) {
                             final int idx = identifierToIndex.get(feature.getPrimitiveId());
                             list.setSelectedIndices(new int[]{idx});
