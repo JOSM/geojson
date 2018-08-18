@@ -12,7 +12,6 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.openstreetmap.josm.data.osm.DataSelectionListener;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
@@ -114,25 +113,22 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
             }
         });
         // The listener for clicks on the map
-        SelectionEventManager.getInstance().addSelectionListener(new DataSelectionListener() {
-            @Override
-            public void selectionChanged(SelectionChangeEvent event) {
-                if (stopProcessingCallbacks) {
-                    return;
-                }
-                try {
-                    stopProcessingCallbacks = true;
-                    for (final OsmPrimitive feature : event.getSelection()) {
-                        if (identifierToIndex.containsKey(feature.getPrimitiveId())) {
-                            final int idx = identifierToIndex.get(feature.getPrimitiveId());
-                            list.setSelectedIndices(new int[]{idx});
-                            list.ensureIndexIsVisible(idx);
-                            break;
-                        }
+        SelectionEventManager.getInstance().addSelectionListener(event -> {
+            if (stopProcessingCallbacks) {
+                return;
+            }
+            try {
+                stopProcessingCallbacks = true;
+                for (final OsmPrimitive feature : event.getSelection()) {
+                    if (identifierToIndex.containsKey(feature.getPrimitiveId())) {
+                        final int idx = identifierToIndex.get(feature.getPrimitiveId());
+                        list.setSelectedIndices(new int[]{idx});
+                        list.ensureIndexIsVisible(idx);
+                        break;
                     }
-                } finally {
-                    stopProcessingCallbacks = false;
                 }
+            } finally {
+                stopProcessingCallbacks = false;
             }
         });
     }
