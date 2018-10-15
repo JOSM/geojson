@@ -27,8 +27,8 @@ repositories {
 
 dependencies {
     // Whenever you change the dependencies of the configuration `packIntoJar`, run `./gradlew updateLibDir` once.
-    packIntoJar packages.jsonp.api
-    packIntoJar packages.jsonp.impl
+    compileOnly packages.jsonp.api
+    compileOnly packages.jsonp.impl
 
     testImplementation packages.junit
 }
