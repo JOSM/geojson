@@ -6,4 +6,4 @@
 /.gradle/
 /bin/
 .idea/
-JOSM-geojson.iml
+*.iml
