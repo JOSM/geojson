@@ -9,16 +9,13 @@ task updateLibDir(type: Sync) {
 
 project.ext.versions = [
     junit: '4.12',
-    geojsonjackson: '1.8',
-    jackson: '2.9.3',
+    jsonp: '1.1.2'
 ]
 
 project.ext.packages = [
     junit: "junit:junit:${versions.junit}",
-    geojsonjackson: "de.grundid.opendatalab:geojson-jackson:${versions.geojsonjackson}",
-    jackson: [
-        core: "com.fasterxml.jackson.core:jackson-core:${versions.jackson}",
-        databind: "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
-        annotations: "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}",
-    ],
+    jsonp: [
+      api: "javax.json:javax.json-api:${versions.jsonp}",
+      impl: "org.glassfish:javax.json:${versions.jsonp}"
+    ]
 ]
