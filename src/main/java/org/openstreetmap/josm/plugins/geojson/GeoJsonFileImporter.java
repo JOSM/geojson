@@ -12,12 +12,13 @@ import org.openstreetmap.josm.gui.io.importexport.FileImporter;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.gui.util.GuiHelper;
+import org.openstreetmap.josm.io.Compression;
 import org.openstreetmap.josm.tools.Logging;
 
 import javax.swing.JOptionPane;
-
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
@@ -27,12 +28,15 @@ import static org.openstreetmap.josm.tools.I18n.tr;
  */
 public class GeoJsonFileImporter extends FileImporter {
 
+    private static final ExtensionFileFilter FILE_FILTER = ExtensionFileFilter.newFilterWithArchiveExtensions(
+        "geojson,json", "geojson", tr("GeoJSON file") + " (*.geojson, *.geojson.gz, *.geojson.bz2, *.geojson.xz, *.geojson.zip, *.json)",
+        ExtensionFileFilter.AddArchiveExtension.NONE, Arrays.asList("gz", "bz", "bz2", "xz", "zip"));
+
     /**
      * Constructs a new GeoJSON File importer with an extension filter for .json and .geojson
      */
     public GeoJsonFileImporter() {
-        super(new ExtensionFileFilter("geojson,json", "geojson",
-            tr("GeoJSON file") + " (*.geojson,*.json)"));
+        super(FILE_FILTER);
     }
 
     @Override
@@ -41,7 +45,7 @@ public class GeoJsonFileImporter extends FileImporter {
         progressMonitor.beginTask(tr("Loading json file..."));
         progressMonitor.setTicksCount(2);
         Logging.info("Parsing GeoJSON: " + file.getAbsolutePath());
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+        try (InputStream fileInputStream = Compression.getUncompressedFileInputStream(file)) {
             final GeoJsonReader geoJsonReader = new GeoJsonReader();
             DataSet data = geoJsonReader.doParseDataSet(fileInputStream, progressMonitor);
             progressMonitor.worked(1);
