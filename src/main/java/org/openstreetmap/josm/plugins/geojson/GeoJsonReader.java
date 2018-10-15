@@ -225,9 +225,9 @@ public class GeoJsonReader extends AbstractReader {
     private Map<String, String> getTags(final JsonObject feature) {
         final Map<String, String> tags = new TreeMap<>();
 
-        JsonObject properties = feature.getJsonObject(PROPERTIES);
-        if (properties != null) {
-            for (Map.Entry<String, JsonValue> stringJsonValueEntry : properties.entrySet()) {
+        JsonValue properties = feature.get(PROPERTIES);
+        if(properties!=null && properties.getValueType().equals(JsonValue.ValueType.OBJECT)) {
+            for (Map.Entry<String, JsonValue> stringJsonValueEntry : properties.asJsonObject().entrySet()) {
                 tags.put(stringJsonValueEntry.getKey(), String.valueOf(stringJsonValueEntry.getValue()));
             }
         }
