@@ -21,6 +21,7 @@ public class GeoJsonPlugin extends Plugin {
         this.geoJsonFileImporter = new GeoJsonFileImporter();
         ExtensionFileFilter.addImporter(this.geoJsonFileImporter);
         ExtensionFileFilter.updateAllFormatsImporter();
+        MainApplication.getMenu().openLocation.addDownloadTaskClass(GeoJsonDownloadTask.class);
     }
 
     @Override
