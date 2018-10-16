@@ -26,6 +26,7 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeListener;
+import org.openstreetmap.josm.tools.I18n;
 
 /**
  * Dialog that contains a listing of all the features opened by the GeoJson plugin.
@@ -82,7 +83,7 @@ public class GeoJsonDialog extends ToggleDialog implements LayerChangeListener, 
      */
     public GeoJsonDialog() {
 
-        super("GeoJson object list", "activate-geojson", "Opens the GeoJson object list pane", null, 150);
+        super(I18n.tr("GeoJson object list"), "activate-geojson", I18n.tr("Opens the GeoJson object list pane"), null, 150);
         this.panel = new JPanel(new BorderLayout());
         this.panel.setName("GeoJson object list");
         add(this.panel, BorderLayout.CENTER);
