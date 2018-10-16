@@ -1,22 +1,28 @@
-plugins {
-  id "org.openstreetmap.josm" version "0.4.6"
-  id 'com.github.ben-manes.versions' version '0.17.0'
-}
+import com.github.spotbugs.SpotBugsTask
 
-apply from: 'dependencies.gradle'
-apply plugin: 'eclipse'
-apply plugin: 'java'
-apply from: 'gradle/version-functions.gradle'
-apply plugin: 'checkstyle'
-apply plugin: 'findbugs'
+plugins {
+  id "org.openstreetmap.josm" version "0.5.3"
+  id "com.github.ben-manes.versions" version "0.20.0"
+  id "com.github.spotbugs" version "1.6.4"
+  id "checkstyle"
+  id "eclipse"
+  id "java"
+}
 
 checkstyle {
-    toolVersion = "8.10.1"
-    ignoreFailures = true
+  toolVersion = "8.13"
+  ignoreFailures = true
 }
-
-group = 'org.openstreetmap.josm.plugins'
-version = getVersionName()
+spotbugs {
+  toolVersion = "3.1.7"
+}
+tasks.withType(SpotBugsTask) {
+  reports {
+    xml.enabled = false
+    html.enabled = true
+  }
+  ignoreFailures = true
+}
 
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
@@ -25,25 +31,17 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    // Whenever you change the dependencies of the configuration `packIntoJar`, run `./gradlew updateLibDir` once.
-    compileOnly packages.jsonp.api
-    compileOnly packages.jsonp.impl
-
-    testImplementation packages.junit
-}
-
 // See https://discuss.gradle.org/t/how-to-add-a-single-extra-resource-to-the-existing-resources/17070/2
 processResources {
-  from "LICENSE"
-  from "README.md"
-}
-
-jar {
-  exclude 'META-INF/**/*'
+  from(projectDir) {
+    include("LICENSE", "README.md")
+  }
 }
 
 archivesBaseName="geojson"
+
 josm {
-  josmCompileVersion = 13878
+  i18n {
+    pathTransformer = getPathTransformer("github.com/JOSM/geojson/blob")
+  }
 }
