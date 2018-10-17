@@ -10,13 +10,17 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.io.importexport.FileImporter;
 import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.gui.util.GuiHelper;
+import org.openstreetmap.josm.io.CachedFile;
 import org.openstreetmap.josm.io.Compression;
+import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.tools.Logging;
 
 import javax.swing.JOptionPane;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
@@ -62,6 +66,13 @@ public class GeoJsonFileImporter extends FileImporter {
                 null, tr("Error loading geojson file {0}", file.getAbsolutePath()), tr("Error"), JOptionPane.WARNING_MESSAGE));
         } finally {
             progressMonitor.finishTask();
+        }
+    }
+
+    public DataSet parseDataSet(final String source) throws IOException, IllegalDataException {
+        try (CachedFile cf = new CachedFile(source)) {
+            InputStream fileInputStream = Compression.getUncompressedFileInputStream(cf.getFile());
+            return GeoJsonReader.parseDataSet(fileInputStream, NullProgressMonitor.INSTANCE);
         }
     }
 
