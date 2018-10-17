@@ -68,7 +68,7 @@ public class GeoJsonDownloadTask extends DownloadOsmTask {
             } else if (!dataSet.isLocked() && settings.isLocked()) {
                 dataSet.lock();
             }
-            return new GeoJsonLayer(tr("Data Layer from GeoJSON: ") + layerName, dataSet, null);
+            return new GeoJsonLayer(tr("Data Layer from GeoJSON: {0}", layerName), dataSet, null);
         }
     }
 }

@@ -46,7 +46,7 @@ public class GeoJsonFileImporter extends FileImporter {
     @Override
     public void importData(final File file, final ProgressMonitor progressMonitor) {
 
-        progressMonitor.beginTask(tr("Loading json file..."));
+        progressMonitor.beginTask(tr("Loading json file…"));
         progressMonitor.setTicksCount(2);
         Logging.info("Parsing GeoJSON: " + file.getAbsolutePath());
         try (InputStream fileInputStream = Compression.getUncompressedFileInputStream(file)) {

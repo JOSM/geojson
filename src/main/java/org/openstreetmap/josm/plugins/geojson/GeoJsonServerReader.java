@@ -23,7 +23,7 @@ public class GeoJsonServerReader extends OsmServerReader {
     @Override
     public DataSet parseOsm(ProgressMonitor progressMonitor) throws OsmTransferException {
         try {
-            progressMonitor.beginTask(tr("Contacting Server...", 10));
+            progressMonitor.beginTask(tr("Contacting Server…"), 10);
             return new GeoJsonFileImporter().parseDataSet(url);
         } catch (Exception e) {
             throw new OsmTransferException(e);
