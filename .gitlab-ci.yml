@@ -1,0 +1,112 @@
+image: registry.gitlab.com/josm/docker-library/openjdk-8-josmplugin:latest
+
+###############
+# Build stage #
+###############
+
+assemble:
+  stage: build
+  script:
+  - ./gradlew assemble generatePot
+  artifacts:
+    paths:
+    - build/
+
+assemble on java 10:
+  stage: build
+  image: registry.gitlab.com/josm/docker-library/openjdk-10-josmplugin:latest
+  script:
+  - ./gradlew assemble
+  artifacts:
+    paths:
+    - build/
+
+assemble on java 11:
+  stage: build
+  image: registry.gitlab.com/josm/docker-library/openjdk-11-josmplugin:latest
+  script:
+  - ./gradlew assemble
+  artifacts:
+    paths:
+    - build/
+
+assemble on java 12:
+  stage: build
+  image: registry.gitlab.com/josm/docker-library/openjdk-12-josmplugin:latest
+  script:
+  - ./gradlew assemble
+  artifacts:
+    paths:
+    - build/
+
+##############
+# Test stage #
+##############
+
+build:
+  stage: test
+  script:
+  - ./gradlew build
+  artifacts:
+    paths:
+    - build/
+  dependencies:
+  - assemble
+
+compile against min JOSM:
+  stage: test
+  script:
+  - ./gradlew compileJava_minJosm
+  dependencies:
+  - assemble
+
+compile against latest JOSM:
+  stage: test
+  script:
+  - ./gradlew compileJava_latestJosm
+  dependencies:
+  - assemble
+
+build on java 10:
+  stage: test
+  image: registry.gitlab.com/josm/docker-library/openjdk-10-josmplugin:latest
+  script:
+  - ./gradlew build
+  dependencies:
+  - assemble on java 10
+
+build on java 11:
+  stage: test
+  image: registry.gitlab.com/josm/docker-library/openjdk-11-josmplugin:latest
+  script:
+  - ./gradlew build
+  dependencies:
+  - assemble on java 11
+
+build on java 12:
+  stage: test
+  image: registry.gitlab.com/josm/docker-library/openjdk-12-josmplugin:latest
+  script:
+  - ./gradlew build
+  dependencies:
+  - assemble on java 12
+
+################
+# Deploy stage #
+################
+
+transifex.com:
+  image: registry.gitlab.com/josm/docker-library/python-transifex:latest
+  stage: deploy
+  environment:
+    name: transifex.com
+    url: https://www.transifex.com/josm/josm/josm-plugin_geojson/
+  script:
+  - TX_TOKEN="$TRANSIFEX_TOKEN" tx push -s --no-interactive
+  dependencies:
+  - build
+  only:
+    refs:
+    - master@JOSM/plugin/geojson
+    variables:
+    - $TRANSIFEX_TOKEN
