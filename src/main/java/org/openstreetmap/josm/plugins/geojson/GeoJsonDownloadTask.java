@@ -4,9 +4,12 @@ package org.openstreetmap.josm.plugins.geojson;
 import org.openstreetmap.josm.actions.downloadtasks.DownloadOsmTask;
 import org.openstreetmap.josm.actions.downloadtasks.DownloadParams;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.tools.Utils;
 
+import java.util.Optional;
 import java.util.concurrent.Future;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
@@ -50,25 +53,18 @@ public class GeoJsonDownloadTask extends DownloadOsmTask {
         }
 
         @Override
-        protected GeoJsonLayer createNewLayer(String layerName) {
-            if (layerName == null || layerName.isEmpty()) {
-                layerName = settings.getLayerName();
+        protected String generateLayerName() {
+            return Optional.of(url.substring(url.lastIndexOf('/')+1))
+                .filter(it -> !Utils.isStripEmpty(it))
+                .orElse(super.generateLayerName());
+        }
+
+        @Override
+        protected GeoJsonLayer createNewLayer(final DataSet dataSet, final Optional<String> layerName) {
+            if (layerName.filter(Utils::isStripEmpty).isPresent()) {
+                throw new IllegalArgumentException("Blank layer name!");
             }
-            if (layerName == null || layerName.isEmpty()) {
-                layerName = url.substring(url.lastIndexOf('/')+1);
-            }
-            if (settings.getDownloadPolicy() != null) {
-                dataSet.setDownloadPolicy(settings.getDownloadPolicy());
-            }
-            if (settings.getUploadPolicy() != null) {
-                dataSet.setUploadPolicy(settings.getUploadPolicy());
-            }
-            if (dataSet.isLocked() && !settings.isLocked()) {
-                dataSet.unlock();
-            } else if (!dataSet.isLocked() && settings.isLocked()) {
-                dataSet.lock();
-            }
-            return new GeoJsonLayer(tr("Data Layer from GeoJSON: {0}", layerName), dataSet, null);
+            return new GeoJsonLayer(tr("Data Layer from GeoJSON: {0}", layerName.orElseGet(this::generateLayerName)), dataSet, null);
         }
     }
 }
