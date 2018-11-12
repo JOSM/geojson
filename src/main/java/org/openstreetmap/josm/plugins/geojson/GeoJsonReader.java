@@ -195,14 +195,23 @@ public class GeoJsonReader extends AbstractReader {
         }
         final Way way = new Way();
 
-        final List<Node> nodes = new ArrayList<>(coordinates.size());
-
+        final int size = coordinates.size();
+        final List<Node> nodes = new ArrayList<>(size);
+        LatLon initialLocation = null;
         for (JsonValue coordinate : coordinates) {
             JsonArray jsonValues = coordinate.asJsonArray();
             double lat = jsonValues.getJsonNumber(1).doubleValue();
             double lon = jsonValues.getJsonNumber(0).doubleValue();
-            final Node node = createNode(lat, lon);
-            nodes.add(node);
+            final LatLon latlon = new LatLon(lat, lon);
+            if (initialLocation != null && initialLocation.equals(latlon)) {
+                // Back at the initial node, re-use it to close the Polygon properly.
+                nodes.add(nodes.get(0));
+            }else {
+                nodes.add(createNode(lat, lon));
+            }
+            if (initialLocation == null) {
+                initialLocation = latlon;
+            }
         }
 
         way.setNodes(nodes);
