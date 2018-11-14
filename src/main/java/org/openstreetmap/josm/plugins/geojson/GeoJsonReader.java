@@ -196,13 +196,21 @@ public class GeoJsonReader extends AbstractReader {
         final Way way = new Way();
 
         final List<Node> nodes = new ArrayList<>(coordinates.size());
-
         for (JsonValue coordinate : coordinates) {
-            JsonArray jsonValues = coordinate.asJsonArray();
-            double lat = jsonValues.getJsonNumber(1).doubleValue();
-            double lon = jsonValues.getJsonNumber(0).doubleValue();
-            final Node node = createNode(lat, lon);
-            nodes.add(node);
+            final JsonArray jsonValues = coordinate.asJsonArray();
+            nodes.add(
+                createNode(
+                    jsonValues.getJsonNumber(1).doubleValue(),
+                    jsonValues.getJsonNumber(0).doubleValue()
+                )
+            );
+        }
+
+        // Re-use first node to close the Polygon properly
+        final int size = nodes.size();
+        if (size > 1 && nodes.get(0).equals(nodes.get(size - 1))) {
+          nodes.remove(size - 1);
+          nodes.add(nodes.get(0));
         }
 
         way.setNodes(nodes);
