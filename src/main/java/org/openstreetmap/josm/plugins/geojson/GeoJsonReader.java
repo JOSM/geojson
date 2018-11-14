@@ -197,21 +197,18 @@ public class GeoJsonReader extends AbstractReader {
 
         final int size = coordinates.size();
         final List<Node> nodes = new ArrayList<>(size);
-        LatLon initialLocation = null;
         for (JsonValue coordinate : coordinates) {
             JsonArray jsonValues = coordinate.asJsonArray();
             double lat = jsonValues.getJsonNumber(1).doubleValue();
             double lon = jsonValues.getJsonNumber(0).doubleValue();
-            final LatLon latlon = new LatLon(lat, lon);
-            if (initialLocation != null && initialLocation.equals(latlon)) {
-                // Back at the initial node, re-use it to close the Polygon properly.
-                nodes.add(nodes.get(0));
-            }else {
-                nodes.add(createNode(lat, lon));
-            }
-            if (initialLocation == null) {
-                initialLocation = latlon;
-            }
+            final Node node = createNode(lat, lon);
+            nodes.add(node);
+        }
+
+        // Re-use first node to close the Polygon properly
+        if (size > 1 && nodes.get(0).equals(nodes.get(size - 1)) {
+          nodes.remove(size - 1);
+          nodes.add(nodes.get(0));
         }
 
         way.setNodes(nodes);
