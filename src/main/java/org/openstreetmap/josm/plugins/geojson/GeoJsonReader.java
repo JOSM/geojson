@@ -206,7 +206,7 @@ public class GeoJsonReader extends AbstractReader {
         }
 
         // Re-use first node to close the Polygon properly
-        if (size > 1 && nodes.get(0).equals(nodes.get(size - 1)) {
+        if (size > 1 && nodes.get(0).equals(nodes.get(size - 1))) {
           nodes.remove(size - 1);
           nodes.add(nodes.get(0));
         }
