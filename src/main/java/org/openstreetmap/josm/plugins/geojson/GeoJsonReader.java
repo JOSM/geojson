@@ -141,7 +141,7 @@ public class GeoJsonReader extends AbstractReader {
         if (coordinates.isEmpty()) {
             return;
         }
-        final Way way = createWay(coordinates);
+        final Way way = createWay(coordinates, false);
         fillTagsFromFeature(feature, way);
     }
 
@@ -154,19 +154,19 @@ public class GeoJsonReader extends AbstractReader {
 
     private void parsePolygon(final JsonObject feature, final JsonArray coordinates) {
         if (coordinates.size() == 1) {
-            final Way way = createWay(coordinates.getJsonArray(0));
+            final Way way = createWay(coordinates.getJsonArray(0), true);
             fillTagsFromFeature(feature, way);
         } else if (coordinates.size() > 1) {
             // create multipolygon
             final Relation multipolygon = new Relation();
             multipolygon.put(TYPE, "multipolygon");
-            Way way = createWay(coordinates.getJsonArray(0));
+            Way way = createWay(coordinates.getJsonArray(0), true);
             if (way != null) {
                 multipolygon.addMember(new RelationMember("outer", way));
             }
 
             for (JsonValue interiorRing : coordinates.subList(1, coordinates.size())) {
-                way = createWay(interiorRing.asJsonArray());
+                way = createWay(interiorRing.asJsonArray(), true);
                 multipolygon.addMember(new RelationMember("inner", way));
             }
 
@@ -189,7 +189,7 @@ public class GeoJsonReader extends AbstractReader {
         return node;
     }
 
-    private Way createWay(final JsonArray coordinates) {
+    private Way createWay(final JsonArray coordinates, final boolean autoClose) {
         if (coordinates.isEmpty()) {
             return null;
         }
@@ -206,11 +206,16 @@ public class GeoJsonReader extends AbstractReader {
             );
         }
 
-        // Re-use first node to close the Polygon properly
         final int size = nodes.size();
-        if (size > 1 && nodes.get(0).equals(nodes.get(size - 1))) {
-          nodes.remove(size - 1);
-          nodes.add(nodes.get(0));
+        if (size > 1) {
+            if (nodes.get(0).equals(nodes.get(size - 1))) {
+                // Re-use first node to close the Polygon or LineString properly
+                nodes.remove(size - 1);
+                nodes.add(nodes.get(0));
+            } else if (autoClose) {
+                // Close Polygon, even if first and last node are not identical
+                nodes.add(nodes.get(0));
+            }
         }
 
         way.setNodes(nodes);
