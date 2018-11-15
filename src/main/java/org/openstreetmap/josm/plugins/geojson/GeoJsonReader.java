@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
@@ -141,8 +142,8 @@ public class GeoJsonReader extends AbstractReader {
         if (coordinates.isEmpty()) {
             return;
         }
-        final Way way = createWay(coordinates, false);
-        fillTagsFromFeature(feature, way);
+        createWay(coordinates, false)
+            .ifPresent(way -> fillTagsFromFeature(feature, way));
     }
 
     private void parseMultiLineString(final JsonObject feature, final JsonObject geometry) {
@@ -154,20 +155,18 @@ public class GeoJsonReader extends AbstractReader {
 
     private void parsePolygon(final JsonObject feature, final JsonArray coordinates) {
         if (coordinates.size() == 1) {
-            final Way way = createWay(coordinates.getJsonArray(0), true);
-            fillTagsFromFeature(feature, way);
+            createWay(coordinates.getJsonArray(0), true)
+                .ifPresent(way -> fillTagsFromFeature(feature, way));
         } else if (coordinates.size() > 1) {
             // create multipolygon
             final Relation multipolygon = new Relation();
             multipolygon.put(TYPE, "multipolygon");
-            Way way = createWay(coordinates.getJsonArray(0), true);
-            if (way != null) {
-                multipolygon.addMember(new RelationMember("outer", way));
-            }
+            createWay(coordinates.getJsonArray(0), true)
+                .ifPresent(way -> multipolygon.addMember(new RelationMember("outer", way)));
 
             for (JsonValue interiorRing : coordinates.subList(1, coordinates.size())) {
-                way = createWay(interiorRing.asJsonArray(), true);
-                multipolygon.addMember(new RelationMember("inner", way));
+                createWay(interiorRing.asJsonArray(), true)
+                    .ifPresent(way -> multipolygon.addMember(new RelationMember("inner", way)));
             }
 
             fillTagsFromFeature(feature, multipolygon);
@@ -183,15 +182,14 @@ public class GeoJsonReader extends AbstractReader {
     }
 
     private Node createNode(final double lat, final double lon) {
-        final LatLon latlon = new LatLon(lat, lon);
-        final Node node = new Node(latlon);
+        final Node node = new Node(new LatLon(lat, lon));
         getDataSet().addPrimitive(node);
         return node;
     }
 
-    private Way createWay(final JsonArray coordinates, final boolean autoClose) {
+    private Optional<Way> createWay(final JsonArray coordinates, final boolean autoClose) {
         if (coordinates.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         final Way way = new Way();
 
@@ -222,7 +220,7 @@ public class GeoJsonReader extends AbstractReader {
 
         getDataSet().addPrimitive(way);
 
-        return way;
+        return Optional.of(way);
     }
 
     private void fillTagsFromFeature(final JsonObject feature, final OsmPrimitive primitive) {
