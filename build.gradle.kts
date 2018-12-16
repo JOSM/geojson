@@ -41,6 +41,8 @@ tasks.withType(ProcessResources::class).getByName("processResources") {
   }
 }
 
+version = 1.0
+
 base.archivesBaseName = "geojson"
 
 josm {
