@@ -33,6 +33,11 @@ java {
 repositories {
   mavenCentral()
 }
+dependencies {
+    testImplementation("org.awaitility:awaitility:3.1.2")
+    testImplementation("junit:junit:4.12")
+    testImplementation("org.openstreetmap.josm:josm-unittest:SNAPSHOT"){ isChanging = true }
+}
 
 // See https://discuss.gradle.org/t/how-to-add-a-single-extra-resource-to-the-existing-resources/17070/2
 tasks.withType(ProcessResources::class).getByName("processResources") {

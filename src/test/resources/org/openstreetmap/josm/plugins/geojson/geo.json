@@ -11,7 +11,7 @@
                 ]
             },
             "properties": {
-                "prop0": "value0"
+                "propA": "valueA"
             }
         },
         {
@@ -38,8 +38,8 @@
                 ]
             },
             "properties": {
-                "prop0": "value0",
-                "prop1": 0.0
+                "propB": "valueB",
+                "propB2": 0.0
             }
         },
         {
@@ -128,10 +128,12 @@
                 ]
             },
             "properties": {
-                "prop0": "value0",
-                "prop1": {
+                "propD": "valueD",
+                "propD2": {
                     "this": "that"
-                }
+                },
+                "propD3": true,
+                "propD4": null
             }
         }
     ]
