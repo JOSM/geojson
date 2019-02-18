@@ -16,20 +16,18 @@ import org.openstreetmap.josm.tools.Logging;
 
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonString;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
@@ -243,10 +241,23 @@ public class GeoJsonReader extends AbstractReader {
     private Map<String, String> getTags(final JsonObject feature) {
         final Map<String, String> tags = new TreeMap<>();
 
-        if (!feature.isNull(PROPERTIES)) {
+        if (feature.containsKey(PROPERTIES) && !feature.isNull(PROPERTIES)) {
             JsonObject properties = feature.getJsonObject(PROPERTIES);
             for (Map.Entry<String, JsonValue> stringJsonValueEntry : properties.entrySet()) {
-                tags.put(stringJsonValueEntry.getKey(), String.valueOf(stringJsonValueEntry.getValue()));
+                final JsonValue value = stringJsonValueEntry.getValue();
+
+                if (value instanceof JsonString) {
+                    tags.put(stringJsonValueEntry.getKey(), ((JsonString) value).getString());
+                } else if (value instanceof JsonStructure) {
+                    Logging.warn(
+                        "The GeoJSON contains an object with property '" + stringJsonValueEntry.getKey()
+                            + "' whose value has the unsupported type '" + value.getClass().getSimpleName() + "'. That key-value pair is ignored!"
+                    );
+                } else if (value.getValueType() == JsonValue.ValueType.NULL) {
+                    tags.put(stringJsonValueEntry.getKey(), null);
+                } else {
+                    tags.put(stringJsonValueEntry.getKey(), value.toString());
+                }
             }
         }
         return tags;
