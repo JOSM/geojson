@@ -16,7 +16,9 @@ import org.openstreetmap.josm.tools.Logging;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -26,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
@@ -191,33 +195,36 @@ public class GeoJsonReader extends AbstractReader {
         if (coordinates.isEmpty()) {
             return Optional.empty();
         }
-        final Way way = new Way();
 
-        final List<Node> nodes = new ArrayList<>(coordinates.size());
-        for (JsonValue coordinate : coordinates) {
+        final List<LatLon> latlons = coordinates.stream().map(coordinate -> {
             final JsonArray jsonValues = coordinate.asJsonArray();
-            nodes.add(
-                createNode(
-                    jsonValues.getJsonNumber(1).doubleValue(),
-                    jsonValues.getJsonNumber(0).doubleValue()
-                )
+            return new LatLon(
+                jsonValues.getJsonNumber(1).doubleValue(),
+                jsonValues.getJsonNumber(0).doubleValue()
             );
-        }
+        }).collect(Collectors.toList());
 
-        final int size = nodes.size();
+        final int size = latlons.size();
+        final boolean doAutoclose;
         if (size > 1) {
-            if (nodes.get(0).equals(nodes.get(size - 1))) {
-                // Re-use first node to close the Polygon or LineString properly
-                nodes.remove(size - 1);
-                nodes.add(nodes.get(0));
-            } else if (autoClose) {
-                // Close Polygon, even if first and last node are not identical
-                nodes.add(nodes.get(0));
+            if (latlons.get(0).equals(latlons.get(size - 1))) {
+                // Remove last coordinate, but later add first node to the end
+                latlons.remove(size - 1);
+                doAutoclose = true;
+            } else {
+                doAutoclose = autoClose;
             }
+        } else {
+            doAutoclose = false;
         }
 
-        way.setNodes(nodes);
+        final Way way = new Way();
+        way.setNodes(latlons.stream().map(Node::new).collect(Collectors.toList()));
+        if (doAutoclose) {
+            way.addNode(way.getNode(0));
+        }
 
+        way.getNodes().stream().distinct().forEach(it -> getDataSet().addPrimitive(it));
         getDataSet().addPrimitive(way);
 
         return Optional.of(way);
