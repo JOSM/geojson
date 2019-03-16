@@ -87,8 +87,32 @@ public class GeoJsonReader extends AbstractReader {
     }
 
     private void parseFeature(final JsonObject feature) {
-        JsonObject geometry = feature.getJsonObject(GEOMETRY);
-        parseGeometry(feature, geometry);
+        JsonValue geometry = feature.get(GEOMETRY);
+        if (geometry != null && geometry.getValueType().equals(JsonValue.ValueType.OBJECT)) {
+            parseGeometry(feature, geometry.asJsonObject());
+        } else {
+            JsonValue properties = feature.get(PROPERTIES);
+            if(properties != null && properties.getValueType().equals(JsonValue.ValueType.OBJECT)) {
+                parseNonGeometryFeature(feature, properties.asJsonObject());
+            } else {
+                Logging.warn(tr("Relation/non-geometry feature without properties found: {0}", feature));
+            }
+        }
+    }
+
+    private void parseNonGeometryFeature(final JsonObject feature, final JsonObject properties) {
+        // get relation type
+        JsonValue type = properties.get(TYPE);
+        if (type == null || properties.getValueType().equals(JsonValue.ValueType.STRING)) {
+            Logging.warn(tr("Relation/non-geometry feature without type found: {0}", feature));
+            return;
+        }
+
+        // create misc. non-geometry feature
+        final Relation relation = new Relation();
+        relation.put(TYPE, type.toString());
+        fillTagsFromFeature(feature, relation);
+        getDataSet().addPrimitive(relation);
     }
 
     private void parseGeometryCollection(final JsonObject feature, final JsonObject geometry) {
@@ -99,6 +123,11 @@ public class GeoJsonReader extends AbstractReader {
     }
 
     private void parseGeometry(final JsonObject feature, final JsonObject geometry) {
+        if (geometry == null) {
+            parseNullGeometry(feature);
+            return;
+        }
+
         switch (geometry.getString(TYPE)) {
             case "Point":
                 parsePoint(feature, geometry.getJsonArray(COORDINATES));
@@ -238,25 +267,31 @@ public class GeoJsonReader extends AbstractReader {
         Logging.warn(tr("Unknown json object found {0}", object));
     }
 
+    private void parseNullGeometry(JsonObject feature) {
+        Logging.warn(tr("Geometry of feature {0} is null", feature));
+    }
+
     private Map<String, String> getTags(final JsonObject feature) {
         final Map<String, String> tags = new TreeMap<>();
 
         if (feature.containsKey(PROPERTIES) && !feature.isNull(PROPERTIES)) {
-            JsonObject properties = feature.getJsonObject(PROPERTIES);
-            for (Map.Entry<String, JsonValue> stringJsonValueEntry : properties.entrySet()) {
-                final JsonValue value = stringJsonValueEntry.getValue();
+            JsonValue properties = feature.get(PROPERTIES);
+            if(properties != null && properties.getValueType().equals(JsonValue.ValueType.OBJECT)) {
+                for (Map.Entry<String, JsonValue> stringJsonValueEntry : properties.asJsonObject().entrySet()) {
+                    final JsonValue value = stringJsonValueEntry.getValue();
 
-                if (value instanceof JsonString) {
-                    tags.put(stringJsonValueEntry.getKey(), ((JsonString) value).getString());
-                } else if (value instanceof JsonStructure) {
-                    Logging.warn(
-                        "The GeoJSON contains an object with property '" + stringJsonValueEntry.getKey()
-                            + "' whose value has the unsupported type '" + value.getClass().getSimpleName() + "'. That key-value pair is ignored!"
-                    );
-                } else if (value.getValueType() == JsonValue.ValueType.NULL) {
-                    tags.put(stringJsonValueEntry.getKey(), null);
-                } else {
-                    tags.put(stringJsonValueEntry.getKey(), value.toString());
+                    if (value instanceof JsonString) {
+                        tags.put(stringJsonValueEntry.getKey(), ((JsonString) value).getString());
+                    } else if (value instanceof JsonStructure) {
+                        Logging.warn(
+                            "The GeoJSON contains an object with property '" + stringJsonValueEntry.getKey()
+                                + "' whose value has the unsupported type '" + value.getClass().getSimpleName() + "'. That key-value pair is ignored!"
+                        );
+                    } else if (value.getValueType() == JsonValue.ValueType.NULL) {
+                        tags.put(stringJsonValueEntry.getKey(), null);
+                    } else {
+                        tags.put(stringJsonValueEntry.getKey(), value.toString());
+                    }
                 }
             }
         }
