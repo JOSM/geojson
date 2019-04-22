@@ -16,7 +16,7 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 /**
  * GeoJson download task.
- * @author Omar Vega Ramos <ovruni@riseup.net>
+ * @author Omar Vega Ramos &lt;ovruni@riseup.net&gt;
  */
 public class GeoJsonDownloadTask extends DownloadOsmTask {
 

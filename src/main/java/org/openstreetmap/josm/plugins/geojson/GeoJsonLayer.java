@@ -13,8 +13,8 @@ import javax.swing.Icon;
 /**
  * Class that displays a map layer containing GeoJSON data.
  *
- * @author Ian Dees <ian.dees@gmail.com>
- * @author matthieun <https://github.com/matthieun>
+ * @author Ian Dees &lt;ian.dees@gmail.com&gt;
+ * @author matthieun &lt;https://github.com/matthieun&gt;
  */
 public class GeoJsonLayer extends OsmDataLayer {
     private final Bounds bounds;

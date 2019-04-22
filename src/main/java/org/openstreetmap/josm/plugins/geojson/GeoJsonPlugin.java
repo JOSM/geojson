@@ -10,8 +10,8 @@ import org.openstreetmap.josm.plugins.PluginInformation;
 /**
  * Main class for the geojson plugin.
  *
- * @author Ian Dees <ian.dees@gmail.com>
- * @author matthieun <https://github.com/matthieun>
+ * @author Ian Dees &lt;ian.dees@gmail.com&gt;
+ * @author matthieun &lt;https://github.com/matthieun&gt;
  */
 public class GeoJsonPlugin extends Plugin {
     private final GeoJsonFileImporter geoJsonFileImporter;

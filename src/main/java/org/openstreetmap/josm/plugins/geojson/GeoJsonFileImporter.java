@@ -27,8 +27,8 @@ import java.util.Arrays;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 /**
- * @author Ian Dees <ian.dees@gmail.com>
- * @author matthieun <https://github.com/matthieun>
+ * @author Ian Dees &lt;ian.dees@gmail.com&gt;
+ * @author matthieun &lt;https://github.com/matthieun&gt;
  */
 public class GeoJsonFileImporter extends FileImporter {
 

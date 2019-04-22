@@ -10,7 +10,7 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 /**
  * GeoJson server reader.
- * @author Omar Vega Ramos <ovruni@riseup.net>
+ * @author Omar Vega Ramos &lt;ovruni@riseup.net&gt;
  */
 public class GeoJsonServerReader extends OsmServerReader {
 
