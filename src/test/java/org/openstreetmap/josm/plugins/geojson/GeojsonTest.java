@@ -2,17 +2,16 @@ package org.openstreetmap.josm.plugins.geojson;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.data.osm.AbstractPrimitive;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
@@ -97,8 +96,8 @@ public class GeojsonTest {
         assertEquals("valueD", foundWay4.get().get("propD"));
         assertFalse(foundWay4.get().hasTag("propD2"));
         assertEquals("true", foundWay4.get().get("propD3"));
-        assertTrue(foundWay4.get().hasKey("propD4"));
-        assertEquals(null, foundWay4.get().get("propD4"));
+        assertFalse(foundWay4.get().hasKey("propD4"));
+        assertNull(foundWay4.get().get("propD4"));
     }
 
     private static boolean areEqualNodes(final OsmPrimitive p1, final OsmPrimitive p2) {
