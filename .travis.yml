@@ -2,6 +2,6 @@ language: java
 jdk:
 - openjdk8
 - oraclejdk8
-- oraclejdk9
-- openjdk10
-script: ./gradlew build compileJava_minJosm
+- oraclejdk11
+- openjdk11
+script: ./gradlew --stacktrace build compileJava_minJosm
