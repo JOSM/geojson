@@ -6,6 +6,7 @@ import org.openstreetmap.josm.actions.downloadtasks.DownloadParams;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.tools.Utils;
 
@@ -60,11 +61,11 @@ public class GeoJsonDownloadTask extends DownloadOsmTask {
         }
 
         @Override
-        protected GeoJsonLayer createNewLayer(final DataSet dataSet, final Optional<String> layerName) {
+        protected OsmDataLayer createNewLayer(final DataSet dataSet, final Optional<String> layerName) {
             if (layerName.filter(Utils::isStripEmpty).isPresent()) {
                 throw new IllegalArgumentException("Blank layer name!");
             }
-            return new GeoJsonLayer(tr("Data Layer from GeoJSON: {0}", layerName.orElseGet(this::generateLayerName)), dataSet, null);
+            return new OsmDataLayer(dataSet, layerName.orElseGet(this::generateLayerName), null);
         }
     }
 }
