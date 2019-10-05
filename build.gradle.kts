@@ -1,20 +1,20 @@
 import com.github.spotbugs.SpotBugsTask
 
 plugins {
-  id("org.openstreetmap.josm") version "0.5.3"
-  id("com.github.ben-manes.versions") version "0.20.0"
-  id("com.github.spotbugs") version "1.6.5"
+  id("org.openstreetmap.josm") version "0.6.4"
+  id("com.github.ben-manes.versions") version "0.25.0"
+  id("com.github.spotbugs") version "2.0.0"
   checkstyle
   eclipse
   java
 }
 
 checkstyle {
-  toolVersion = "8.13"
+  toolVersion = "8.24"
   isIgnoreFailures = true
 }
 spotbugs {
-  toolVersion = "3.1.8"
+  toolVersion = "3.1.12"
 }
 tasks.withType(SpotBugsTask::class) {
   reports {

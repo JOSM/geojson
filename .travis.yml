@@ -4,4 +4,4 @@ jdk:
 - oraclejdk8
 - oraclejdk11
 - openjdk11
-script: ./gradlew --stacktrace build compileJava_minJosm
+script: ./gradlew build compileJava_minJosm
